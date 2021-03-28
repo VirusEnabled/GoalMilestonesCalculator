@@ -10,10 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
-
+import os , sys
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR =os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+from config import *
+C = Config()
+CONFIG = C.config
 
 
 # Quick-start development settings - unsuitable for production
@@ -23,21 +26,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'q--6xih61wy(4d)fd+!7(f1q&dapltj^67jt+5p=)@8n+^kx7#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = C.get_site_env
 
-ALLOWED_HOSTS = []
-
+if DEBUG:
+    from .dev_settings import *
+else:
+    from .production_settings import *
 
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'channels',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'website',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'crispy_forms'
 ]
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+
+
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,7 +75,7 @@ ROOT_URLCONF = 'GoalMilestonesCalculator.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [f"{BASE_DIR}/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,17 +89,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'GoalMilestonesCalculator.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -116,5 +126,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-STATIC_URL = '/static/'
+MEDIA_URL = f'/media/'
+MEDIA_ROOT = f'{BASE_DIR}/media'
+STATIC_ROOT = f'{BASE_DIR}/static'
+STATIC_URL = f'/static/'
