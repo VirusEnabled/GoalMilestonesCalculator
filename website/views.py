@@ -36,5 +36,5 @@ def handler500(request, template_name=None):
 
 
 def homepage(request):
-    template = ''
+    template = 'website/base.html'
     return render(request, template_name=template, context={})
