@@ -8,7 +8,9 @@ app_name='website'
 handler404 = 'website.views.handler404'
 handler500 = 'website.views.handler500'
 
-urlpatterns = [
-                  path('', homepage, name='home'),
-
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns = \
+    [
+    path('',LoginUser.as_view(),name='login'),
+    path('dashboard',Dashboard.as_view(),name='dashboard'),
+    path('logout',logout_user,name='logout'),
+    ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

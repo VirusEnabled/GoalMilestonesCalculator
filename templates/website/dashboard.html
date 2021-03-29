@@ -1,0 +1,104 @@
+{% extends 'website/basefile.html' %}
+<title>{% block title %} Dashboard {% endblock %}</title>
+<body>
+{% block body %}
+{% csrf_token %}
+{% load static %}
+{% load crispy_forms_tags %}
+<style>
+    .front-selector{
+    width: 73%;
+
+    }
+
+    #go{
+    position: absolute;
+    margin-left: 74%;
+    margin-top: 28px;
+    }
+
+    #filters{
+    position: absolute;
+    margin-left: 80.5%;
+    margin-top: 28px;
+    }
+
+    .select-form{
+    margin-left: 1%;
+    padding: initial;
+
+    }
+    form{
+    margin-top:10px;
+    }
+    #title{
+    margin-left:20px;
+    }
+    #base-selector-form{
+    margin-left: 84px;
+    }
+    #graph_div{
+    margin-top:20px;
+    }
+    .graph_inner_container{
+        padding-left:2%;
+    }
+
+    .inner-graph{
+        margin-top:-1%;
+
+    }
+</style>
+    <h2 id="title">
+        Signals App
+    </h2>
+<div class="form-container">
+
+    <form id="base-selector-form" action="{% url 'website:dashboard' %}" method="POST">
+        {% csrf_token %}
+        <div class="card select-form">
+            {{form|crispy}}
+            <button id="go" class="btn btn-round btn-success" type="submit">
+                Go <i class="ion-play"></i>
+            </button>
+            <a id="filters" data-toggle="modal" data-target="#action_form" class="btn btn-secondary btn-round">
+                Filters
+            </a>
+        </div>
+
+    </form>
+
+</div>
+<!-- main form class to use in order to generate the base modals based on each item of the list as well -->
+<!-- Modal normal sign in start -->
+<div id="action_form" class="modal fade create-form" role="dialog">
+    <div class="modal-dialog card">
+        <i class="ion-close modal-close" data-dismiss="modal"></i>
+        <hr>
+        <div class="modal-header">
+            <h3 style="text-align:center;">
+                Stock Selection for operations
+            </h3>
+        </div>
+        <div class="card-block">
+            <form action="{% url 'website:dashboard' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{filter_form|crispy}}
+                </div>
+                <div class="modal-footer">
+                    <button id="close_modal" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-success" type="submit">Generate Graph</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+ <!--Modal normal sign in end-->
+
+{% endblock %}
+</body>
+
+

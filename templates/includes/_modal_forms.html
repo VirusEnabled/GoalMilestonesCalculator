@@ -1,0 +1,302 @@
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+{% include 'includes/basefile_meta.html' %}
+<!-- tabbed form modal start -->
+<div id="tabbed-form" class="modal fade mixed-form" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content card">
+            <div class="modal-body card-block">
+                <button type="button" class="close" data-dismiss="modal" onclick="close_modal();" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                <div class="login-card-modal">
+                    <form class="md-float-material">
+                        <div class="tabbed-modal">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs nav-justified" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#sign_in" role="tab">
+                                        <h6 style="color:black;  text-align:center;">Sign in</h6>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#registration" role="tab">
+                                        <h6 style="color:black;  text-align:center;">Register</h6>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <!-- Sign in  -->
+                                <div class="tab-pane active" id="sign_in" role="tabpanel">
+                                    {% csrf_token %}
+                                    <div class="auth-box">
+                                        <div class="row m-b-20">
+                                            <div class="col-md-12">
+                                                <h3 class="text-center txt-primary" style="color:black;  text-align:center;"> Sign In</h3>
+                                            </div>
+                                        </div>
+                                        <div class="error_div  danger">
+                                            <h5 id="error_mgs" class="alert-danger">
+                                            </h5>
+                                        </div>
+                                        <hr>
+                                        <div class="input-group">
+                                            <input type="email" class="form-control" id='login_email' placeholder="Email" required>
+                                            <span class="md-line"></span>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id='login_password' placeholder="Password" required>
+                                            <span class="md-line"></span>
+                                        </div>
+                                        <div class="row m-t-25 text-left">
+                                            <div class="col-sm-6 col-xs-12">
+                                                <div class="checkbox-fade fade-in-primary">
+                                                    <label>
+                                                        <input type="checkbox" value="">
+                                                        <span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>
+                                                        <span class="text-inverse">Remember me</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xs-12 forgot-phone text-right">
+                                                <a href="{% url 'password_recovery' 'password_recovery'%}" class="text-right f-w-600 text-inverse"> forgot Password?</a>
+                                            </div>
+                                        </div>
+                                        <div class="row m-t-15">
+                                            <div class="col-md-12">
+                                                <button type="button" id='login_btn' class="btn btn-primary btn-md btn-block waves-effect text-center" onclick="load_form();">LOGIN</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Registration tab -->
+                                <div class="tab-pane" id="registration" role="tabpanel">
+                                    <div class="auth-box">
+                                        <div class="row m-b-20">
+                                            <div class="col-md-12">
+                                                <h3 class="text-center txt-primary" style="color:black;  text-align:center;"> Sign up. It is fast and easy.</h3>
+                                            </div>
+                                        </div>
+                                        <div class="error_div danger">
+                                            <h5 id="error_mgs_sign" class="alert-danger">
+                                            </h5>
+                                        </div>
+                                        <hr>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="username" placeholder="Choose Username" required>
+                                            <span class="md-line"></span>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="email" placeholder="Your Email Address" required>
+                                            <span class="md-line"></span>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="password" id="password" class="form-control" placeholder="Choose Password" required>
+                                            <span class="md-line"></span>
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="password" id="confirm_password" class="form-control" placeholder="Confirm Password" required>
+                                            <span class="md-line"></span>
+                                        </div>
+                                        <div class="row m-t-25 text-left">
+                                            <div class="col-md-12">
+                                                <div class="checkbox-fade fade-in-primary">
+                                                    <label>
+                                                        <input type="checkbox" value="">
+                                                        <span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>
+                                                        <span class="text-inverse">I read and accept <a href="#">Terms &amp; Conditions</a></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="checkbox-fade fade-in-primary">
+                                                    <label>
+                                                        <input type="checkbox" value="">
+                                                        <span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>
+                                                        <span class="text-inverse">Send me the <a href="">Newsletter</a> weekly</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row m-t-15">
+                                            <div class="col-md-12">
+                                                <button type="button" class="btn btn-primary btn-md btn-block waves-effect text-center" onclick="load_form('registration');">Sign up now</button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <p class="text-inverse text-left m-b-0">Thank you and enjoy our website.</p>
+                                                <p class="text-inverse text-left"><b>Your Authentication Team</b></p>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <img src="{%  static 'images/auth/Logo-small-bottom.png' %}" alt="small-logo.png">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- tabbed form modal end -->
+
+<!-- Report generation form modal start -->
+
+<div id="report-form" class="modal fade mixed-form" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content card">
+            <div class="modal-body card-block">
+                <button type="button" class="close" data-dismiss="modal" onclick="close_modal();" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report generation form modal end -->
+
+
+                <!--<div class="login-card-modal">-->
+                    <!--<form class="md-float-material">-->
+                        <!--<div class="tabbed-modal">-->
+                            <!--&lt;!&ndash; Nav tabs &ndash;&gt;-->
+                            <!--<ul class="nav nav-tabs nav-justified" role="tablist">-->
+                                <!--<li class="nav-item">-->
+                                    <!--<a class="nav-link active" data-toggle="tab" href="#sign_in" role="tab">-->
+                                        <!--<h6 style="color:black;  text-align:center;">Sign in</h6>-->
+                                    <!--</a>-->
+                                <!--</li>-->
+                                <!--<li class="nav-item">-->
+                                    <!--<a class="nav-link" data-toggle="tab" href="#registration" role="tab">-->
+                                        <!--<h6 style="color:black;  text-align:center;">Register</h6>-->
+                                    <!--</a>-->
+                                <!--</li>-->
+                            <!--</ul>-->
+                            <!--&lt;!&ndash; Tab panes &ndash;&gt;-->
+                            <!--<div class="tab-content">-->
+                                <!--&lt;!&ndash; Sign in  &ndash;&gt;-->
+                                <!--<div class="tab-pane active" id="sign_in" role="tabpanel">-->
+                                    <!--{% csrf_token %}-->
+                                    <!--<div class="auth-box">-->
+                                        <!--<div class="row m-b-20">-->
+                                            <!--<div class="col-md-12">-->
+                                                <!--<h3 class="text-center txt-primary" style="color:black;  text-align:center;"> Sign In</h3>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--<div class="error_div  danger">-->
+                                            <!--<h5 id="error_mgs" class="alert-danger">-->
+                                            <!--</h5>-->
+                                        <!--</div>-->
+                                        <!--<hr>-->
+                                        <!--<div class="input-group">-->
+                                            <!--<input type="email" class="form-control" id='login_email' placeholder="Email" required>-->
+                                            <!--<span class="md-line"></span>-->
+                                        <!--</div>-->
+                                        <!--<div class="input-group">-->
+                                            <!--<input type="password" class="form-control" id='login_password' placeholder="Password" required>-->
+                                            <!--<span class="md-line"></span>-->
+                                        <!--</div>-->
+                                        <!--<div class="row m-t-25 text-left">-->
+                                            <!--<div class="col-sm-6 col-xs-12">-->
+                                                <!--<div class="checkbox-fade fade-in-primary">-->
+                                                    <!--<label>-->
+                                                        <!--<input type="checkbox" value="">-->
+                                                        <!--<span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>-->
+                                                        <!--<span class="text-inverse">Remember me</span>-->
+                                                    <!--</label>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                            <!--<div class="col-sm-6 col-xs-12 forgot-phone text-right">-->
+                                                <!--<a href="{% url 'password_recovery' 'password_recovery'%}" class="text-right f-w-600 text-inverse"> forgot Password?</a>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--<div class="row m-t-15">-->
+                                            <!--<div class="col-md-12">-->
+                                                <!--<button type="button" id='login_btn' class="btn btn-primary btn-md btn-block waves-effect text-center" onclick="load_form();">LOGIN</button>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+
+                                <!--&lt;!&ndash; Registration tab &ndash;&gt;-->
+                                <!--<div class="tab-pane" id="registration" role="tabpanel">-->
+                                    <!--<div class="auth-box">-->
+                                        <!--<div class="row m-b-20">-->
+                                            <!--<div class="col-md-12">-->
+                                                <!--<h3 class="text-center txt-primary" style="color:black;  text-align:center;"> Sign up. It is fast and easy.</h3>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--<div class="error_div danger">-->
+                                            <!--<h5 id="error_mgs_sign" class="alert-danger">-->
+                                            <!--</h5>-->
+                                        <!--</div>-->
+                                        <!--<hr>-->
+                                        <!--<div class="input-group">-->
+                                            <!--<input type="text" class="form-control" id="username" placeholder="Choose Username" required>-->
+                                            <!--<span class="md-line"></span>-->
+                                        <!--</div>-->
+                                        <!--<div class="input-group">-->
+                                            <!--<input type="text" class="form-control" id="email" placeholder="Your Email Address" required>-->
+                                            <!--<span class="md-line"></span>-->
+                                        <!--</div>-->
+                                        <!--<div class="input-group">-->
+                                            <!--<input type="password" id="password" class="form-control" placeholder="Choose Password" required>-->
+                                            <!--<span class="md-line"></span>-->
+                                        <!--</div>-->
+                                        <!--<div class="input-group">-->
+                                            <!--<input type="password" id="confirm_password" class="form-control" placeholder="Confirm Password" required>-->
+                                            <!--<span class="md-line"></span>-->
+                                        <!--</div>-->
+                                        <!--<div class="row m-t-25 text-left">-->
+                                            <!--<div class="col-md-12">-->
+                                                <!--<div class="checkbox-fade fade-in-primary">-->
+                                                    <!--<label>-->
+                                                        <!--<input type="checkbox" value="">-->
+                                                        <!--<span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>-->
+                                                        <!--<span class="text-inverse">I read and accept <a href="#">Terms &amp; Conditions</a></span>-->
+                                                    <!--</label>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                            <!--<div class="col-md-12">-->
+                                                <!--<div class="checkbox-fade fade-in-primary">-->
+                                                    <!--<label>-->
+                                                        <!--<input type="checkbox" value="">-->
+                                                        <!--<span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>-->
+                                                        <!--<span class="text-inverse">Send me the <a href="">Newsletter</a> weekly</span>-->
+                                                    <!--</label>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--<div class="row m-t-15">-->
+                                            <!--<div class="col-md-12">-->
+                                                <!--<button type="button" class="btn btn-primary btn-md btn-block waves-effect text-center" onclick="load_form('registration');">Sign up now</button>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--<hr>-->
+                                        <!--<div class="row">-->
+                                            <!--<div class="col-md-10">-->
+                                                <!--<p class="text-inverse text-left m-b-0">Thank you and enjoy our website.</p>-->
+                                                <!--<p class="text-inverse text-left"><b>Your Authentication Team</b></p>-->
+                                            <!--</div>-->
+                                            <!--<div class="col-md-2">-->
+                                                <!--<img src="{%  static 'images/auth/Logo-small-bottom.png' %}" alt="small-logo.png">-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</form>-->
+                <!--</div>-->

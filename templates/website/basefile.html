@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} |GoalMilestonesCalculator</title>
+    {% include 'includes/_meta.html' %}
+    {% load static %}
+    {% load crispy_forms_tags %}
+</head>
+<body class="flex-wrapper" style="background-color:white;">
+<div>
+    {% include 'includes/_navbar.html' %}
+</div>
+<div class="card">
+
+</div>
+{% block body %}
+
+{% endblock %}
+</body>
+{% include 'includes/footer.html' %}
+</html>

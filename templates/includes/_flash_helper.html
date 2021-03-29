@@ -1,0 +1,50 @@
+{% load static %}
+    <!-- TOASTR -->
+  <link rel="stylesheet" href="{% static 'css/toastr.css'%}">
+  <script src="{% static 'js/toastr.js'%}"></script>
+  <!-- TOASTR -->
+
+{% if messages %}
+    {% for message in messages %}
+     <script>
+toastr.options = {
+  "closeButton": false,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": false,
+  "positionClass": "toast-top-right",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": "300",
+  "hideDuration": "1000",
+  "timeOut": "5000",
+  "extendedTimeOut": "1000",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+};
+
+ switch("{{message.tags}}"){
+
+   case 'success':
+     toastr.success("{{message|title}}");
+     break;
+
+
+  case 'warning':
+     toastr.warning("{{message|title}}");
+     break;
+
+
+  case 'error':
+     toastr.error("{{message|title}}");
+     break;
+
+  default:
+     toastr.info("{{message|title}}");
+     break;}
+
+     </script>
+    {% endfor %}
+{% endif %}
