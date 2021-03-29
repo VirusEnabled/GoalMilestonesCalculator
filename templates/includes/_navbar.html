@@ -1,0 +1,80 @@
+{% load static %}
+{% csrf_token %}
+<nav class="navbar header-navbar pcoded-header" style="background-color:black; color: white;">
+    <div class="navbar-wrapper">
+        <div class="navbar-logo">
+            <!--<a class="mobile-menu" id="mobile-collapse" href="#!">-->
+                <!--&lt;!&ndash;<i class="feather icon-menu"></i>&ndash;&gt;-->
+                <!--<i class="feather icon-menu"></i>-->
+            <!--</a>-->
+            <div style="padding-left:20%; padding-bottom:30px;">
+                <a href="{% if request.user.is_authenticated %} {% url 'website:dashboard' %} {% else %}{% url 'website:login' %} {% endif %}" style="margin-left:20%;">
+                <h2  id="logo_home" class="logo-nav" style="">
+                   <i class="ion-ios-home"></i>
+                </h2>
+                <!--<h5 class="logo-nav-text" style="color:white; margin-left:40%; position:absolute;">-->
+                    <!--<strong>-->
+                    <!--TR-->
+                    <!--</strong>-->
+                <!--</h5>-->
+            </a>
+            </div>
+             <script>
+
+                    function adjust() {
+                    console.log("running...")
+                    var house_element = document.getElementById('logo_home');
+                    if(navigator.userAgent.indexOf("Firefox") != -1 )
+                    {
+                     house_element.style.marginTop="-11px";
+                    }
+
+                    else
+                    {
+                        if (window.innerWidth > 600)
+                        {
+                            house_element.style.marginTop="4px";
+                        }
+                        else
+                        {
+                           house_element.style.marginTop="-12px";
+                        }
+                    }
+                    }
+                    adjust();
+
+             </script>
+            <a class="mobile-options" style="margin-right:-10%; margin-left: 49%;">
+                <i class="ion-drag"></i>
+            </a>
+        </div>
+
+        <div class="navbar-container container-fluid">
+            <div data-phase="0" class="offline-ui offline-ui-up offline-ui-up-5s">
+                <div class="offline-ui-content" data-retry-in="60" data-retry-in-abbr="">
+                </div>
+                <a class="offline-ui-retry"></a>
+            </div>
+
+            <ul class="nav-right nav_options_owner" style="display:block;position:absolute;">
+                <li class="user-profile header-notification prof">
+                    <div class="dropdown-primary dropdown">
+                        <div class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="{% static 'images/default.png' %}" class="img-radius" alt="Img">
+                            <span>{{request.user.username|title}}</span>
+                        </div>
+                        <ul class="show-notification profile-notification dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
+                            <li>
+                                <a href="{% url 'website:logout' %}">
+                                    <i class="feather icon-log-out"></i> Logout
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

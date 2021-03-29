@@ -1,0 +1,30 @@
+{% for block in accepted_blocks %}
+    <div class="card offer-container form-group z-depth-0" style="padding:10px 10px 10px 10px;">
+        <h5> ID </h5>
+        {{block.block_id}}
+        <h5> Price </h5>
+        {{block.currency}}$ {{block.minimun_price}}
+        <h5> Estimated Time of Arrival </h5>
+        {{block.arrival_time}}
+        <h5> Location </h5>
+        {{block.area_id}} {{block.location}}
+
+        <h5> Safely forfeit before </h5>
+        {{block.forfeit_before}}
+        <hr>
+        <h5 align="center"> Actions </h5>
+        <hr>
+       <div class="form-group" align="center">
+        <a onclick="ive_arrived({{block.iter_id}})" class="btn  btn-round btn-success">I've arrived <i class="ion-checkmark-circled"></i> </a>
+        <a onclick="forfeit_block({{block.iter_id}})"  class="btn btn-round btn-danger">Forfeit Block <i class="ion-minus-circled"></i></a>
+        <a id="btn_more_info_{{block.iter_id}}" href="#" class="btn btn-round btn-info" data-align="right"> More info <i class="ion-ios-information-outline"></i> </a>
+        </div>
+    </div>
+{% empty %}
+    <div class="card offer-container form-group z-depth-0" style="padding:10px 10px 10px 10px;">
+      <h3 align="center">
+          There's no blocks on schedule, at the moment. <br> To start scheduling automatically, tap on start.
+      </h3>
+
+    </div>
+{% endfor %}

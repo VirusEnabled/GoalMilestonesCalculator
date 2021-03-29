@@ -6,7 +6,7 @@ from config import Config as conf
 C = conf()
 CONFIG = C.config
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['ec2-18-188-106-185.us-east-2.compute.amazonaws.com']
 
 DATABASES = {
     'default':

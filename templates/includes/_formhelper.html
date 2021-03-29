@@ -1,0 +1,54 @@
+{% load crispy_forms_tags %}
+<!--<div class=" card-block modal-dialog">-->
+    <!--<div class="modal-body">-->
+    <!--<p class="lead"> Are you sure you want to delete this filter? </p>-->
+    <!--</div>-->
+    <!--<div class="modal-footer">-->
+    <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+    <!--<button class="btn btn-danger">Delete</button>-->
+    <!--</div>-->
+
+<!--</div>-->
+<!-- Modal normal sign in start -->
+<div id="delete-user" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="card-block">
+            <div class="modal-body">
+                <p class="lead"> Are you sure you want to delete this user? </p>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button class="btn btn-danger" onclick="delete_filter({{user.unique_id}});">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal normal sign in end-->
+
+
+
+<!-- Modal delete filter starts-->
+<div id="delete-filter" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="login-card card-block login-card-modal">
+            <form class="md-float-material" action="#" method="POST">
+                    {% csrf_token %}
+                <div class="card m-t-15">
+                    <div class="auth-box card-block">
+                    <div class="row m-b-0">
+                        <div class="col-md-12">
+                            <h3 class="text-left">Are you sure you want to delete this filter? {{filter}}</h3>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary " data-dismiss="modal">Close</button>
+                        <button type="submit" class=" btn btn-danger ">Delete</button>
+                    </div>
+                </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal delete filter end-->

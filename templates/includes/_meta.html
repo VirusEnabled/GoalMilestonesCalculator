@@ -1,0 +1,216 @@
+{% load static %}
+{% load i18n static %}
+{% load crispy_forms_tags %}
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="An app capable of verifying different statistical analysis to the stock market">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title> {% block title %} {% endblock %}| TR ERP</title>
+
+{% block extrastyle %}{% endblock %}
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static 'admin/css/rtl.css' %}{% endblock %}" />{% endif %}
+{% block extrahead %}{% endblock %}
+{% block responsive %}
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/responsive.css' %}" />
+    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static 'admin/css/responsive_rtl.css' %}" />{% endif %}
+{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+
+<!-- Favicon -->
+<link rel="icon" href="{% static 'images/logox.jpeg'%}" type="image/jpeg">
+
+
+<!-- Jquery -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\jquery\js\jquery.min.js"></script>
+<!-- Icons -->
+<link rel="stylesheet" href="{% static 'assets/vendor/nucleo/css/nucleo.css'%}" type="text/css">
+<link rel="stylesheet" href="{% static '/adminty/files/assets/icon/font-awesome/css/font-awesome.min.css'%}" type="text/css">
+<!-- simple line icon -->
+<link rel="stylesheet" type="text/css" href="{% static 'adminty\files\assets\icon\simple-line-icons\css\simple-line-icons.css'%}">
+<link rel="stylesheet" type="text/css" href="{%static 'fonts/css/fontawesome-all.min.css'%}">
+
+
+<!-- ico font -->
+<link rel="stylesheet" type="text/css" href="{% static 'adminty\files\assets\icon\icofont\css\icofont.css'%}">
+
+<!-- Google font-->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
+
+<!-- Date-time picker css -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\pages\advance-elements\css\bootstrap-datetimepicker.css">
+<!-- Date-range picker css  -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\bower_components\bootstrap-daterangepicker\css\daterangepicker.css">
+
+<!-- Date-Dropper css -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\bower_components\datedropper\css\datedropper.min.css">
+<!-- Bootstrap date-time-picker js -->
+<script type="text/javascript" src="\static\adminty\files\assets\pages\advance-elements\moment-with-locales.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\bootstrap-datepicker\js\bootstrap-datepicker.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\assets\pages\advance-elements\bootstrap-datetimepicker.min.js"></script>
+<!-- Date-range picker js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\bootstrap-daterangepicker\js\daterangepicker.js"></script>
+<!-- Date-dropper js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\datedropper\js\datedropper.min.js"></script>
+
+
+
+<!-- Data Table Css -->
+<link rel="stylesheet" type="text/css" href="{% static 'adminty\files\bower_components\datatables.net-bs4\css\dataTables.bootstrap4.min.css'%}">
+<link rel="stylesheet" type="text/css" href="{% static 'adminty\files\assets\pages\data-table\css\buttons.dataTables.min.css'%}">
+<link rel="stylesheet" type="text/css" href="{% static 'adminty\files\bower_components\datatables.net-responsive-bs4\css\responsive.bootstrap4.min.css'%}">
+<link rel="stylesheet" type="text/css" href="{% static 'adminty\files\assets\pages\data-table\extensions\responsive\css\responsive.dataTables.css'%}">
+
+<!-- data-table js -->
+<script src="{% static 'adminty\files\bower_components\datatables.net\js\jquery.dataTables.min.js'%}"></script>
+<script src="{% static 'adminty\files\bower_components\datatables.net-buttons\js\dataTables.buttons.min.js'%}"></script>
+<script src="{% static 'adminty\files\assets\pages\data-table\js\jszip.min.js'%}"></script>
+<script src="{% static 'adminty\files\assets\pages\data-table\js\pdfmake.min.js'%}"></script>
+<script src="{% static 'adminty\files\assets\pages\data-table\js\vfs_fonts.js'%}"></script>
+<script src="{% static 'adminty\files\assets\pages\data-table\extensions\responsive\js\dataTables.responsive.min.js'%}"></script>
+<script src="{% static 'adminty\files\bower_components\datatables.net-buttons\js\buttons.print.min.js'%}"></script>
+<script src="{% static 'adminty\files\bower_components\datatables.net-buttons\js\buttons.html5.min.js'%}"></script>
+<script src="{% static 'adminty\files\bower_components\datatables.net-bs4\js\dataTables.bootstrap4.min.js'%}"></script>
+<script src="{% static 'adminty\files\bower_components\datatables.net-responsive\js\dataTables.responsive.min.js'%}"></script>
+<script src="{% static 'adminty\files\bower_components\datatables.net-responsive-bs4\js\responsive.bootstrap4.min.js'%}"></script>
+<script src="{% static 'scripts\data-table-custom.js'%}"></script>
+
+
+<!--card js-->
+<script src="\static\adminty\files\assets\pages\payment-card\card.js"></script>
+<script src="\static\adminty\files\assets\pages\payment-card\jquery.payform.min.js" charset="utf-8"></script>
+
+<!-- CUSTOM JS AND CSS -->
+<!-- Favicon -->
+<!-- jquery slimscroll js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js"></script>
+<!-- modernizr js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\modernizr\js\modernizr.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\modernizr\js\css-scrollbars.js"></script>
+
+<!-- sweet alert framework -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\bower_components\sweetalert\css\sweetalert.css">
+
+<!-- sweet alert js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\sweetalert\js\sweetalert.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\assets\js\modal.js"></script>
+<!-- sweet alert modal.js intialize js -->
+
+<!-- modalEffects js nifty modal window effects -->
+<script type="text/javascript" src="\static\adminty\files\assets\js\modalEffects.js"></script>
+<script type="text/javascript" src="\static\adminty\files\assets\js\classie.js"></script>
+
+<!-- animation nifty modal window effects css -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\css\component.css">
+
+<!-- Accordion js -->
+<script type="text/javascript" src="\static\adminty\files\assets\pages\accordion\accordion.js"></script>
+
+<!-- Offline themes css -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\bower_components\offline\css\offline-theme-slide.css">
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\bower_components\offline\css\offline-language-english.css">
+
+<!-- Offline js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\offline\js\offline.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\assets\pages\offline\offline-custom.js"></script>
+
+<!-- Icons -->
+<link rel="stylesheet" href="{% static 'assets/vendor/nucleo/css/nucleo.css'%}" type="text/css">
+
+<!-- TOASTR -->
+<link rel="stylesheet" href="{% static 'css/toastr.css'%}">
+<script src="{% static 'scripts/toastr.js'%}"></script>
+<!-- TOASTR -->
+
+
+<!-- Google font--><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
+<!-- Required Fremwork -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\bower_components\bootstrap\css\bootstrap.min.css">
+<!-- themify-icons line icon -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\icon\themify-icons\themify-icons.css">
+<!-- feather Awesome -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\icon\feather\css\feather.css">
+<!-- ion icon css -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\icon\ion-icon\css\ionicons.min.css">
+<!-- ico font -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\icon\icofont\css\icofont.css">
+
+<!-- Menu-Search css -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\pages\menu-search\css\component.css">
+<!-- Style.css -->
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\css\style.css">
+<link rel="stylesheet" type="text/css" href="\static\adminty\files\assets\css\jquery.mCustomScrollbar.css">
+
+<!-- Required Jquery -->
+<script type="text/javascript" src="\static\adminty\files\files\bower_components\jquery\js\jquery.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\jquery-ui\js\jquery-ui.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\popper.js\js\popper.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\bootstrap\js\bootstrap.min.js"></script>
+
+<!-- jquery slimscroll js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js"></script>
+
+
+<!-- i18next.min.js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\i18next\js\i18next.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\i18next-xhr-backend\js\i18nextXHRBackend.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\i18next-browser-languagedetector\js\i18nextBrowserLanguageDetector.min.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\jquery-i18next\js\jquery-i18next.min.js"></script>
+
+<!-- modernizr js -->
+<script type="text/javascript" src="\static\adminty\files\bower_components\modernizr\js\modernizr.js"></script>
+<script type="text/javascript" src="\static\adminty\files\bower_components\modernizr\js\css-scrollbars.js"></script>
+<script src="\static\adminty\files\assets\js\pcoded.min.js"></script>
+<script src="\static\adminty\files\assets\js\vartical-layout.min.js"></script>
+<script src="\static\adminty\files\assets\js\jquery.mCustomScrollbar.concat.min.js"></script>
+<!-- Custom js -->
+<script type="text/javascript" src="\static\adminty\files\assets\js\script.js"></script>
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'UA-23581568-13');
+</script>
+
+
+
+<!-- CUSTOM -->
+<!--<link rel="stylesheet" type="text/css" href="{% static 'css/main_style.css'%}">-->
+<script type="text/javascript" src="{% static 'scripts/toastr.js'%}"></script>
+<script type="text/javascript" src="{% static 'scripts/basefile_scripts.js'%}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/toastr.css'%}">
+    <!--Stripe Elements-->
+<script>
+    {% include "includes/actions.js" %}
+</script>
+</head>
+{% include 'includes/_main_style.html'  %}
+<!-- Pre-loader start -->
+<!-- CUSTOM PRELOADER -->
+<div class="theme-loader" style="padding-top:25%;">
+        <img class="loader-logo" src="{% static 'images/logox.jpeg'%}" alt="grupo-punta-cana-logo" style="width: 200px; height:150px; margin-left: 42.5%;">
+     <h1 style="text-align:center;">Goal Milestones Calculator <br> GPC </h1>
+    <br>
+    <svg id="loader2" viewBox="0 0 100 100">
+    <circle id="circle-loader2" cx="50" cy="50" r="45" style="stroke:blue;"></circle>
+    </svg>
+</div>
+<!-- Pre-loader end -->
+
+<!-- flash-helper -->
+<div>
+    {% include 'includes/_flash_helper.html' %}
+</div>
+<!-- flash-helper end -->
