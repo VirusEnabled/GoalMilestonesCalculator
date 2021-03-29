@@ -11,5 +11,4 @@ handler500 = 'website.views.handler500'
 urlpatterns = [
                   path('', homepage, name='home'),
 
-
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
