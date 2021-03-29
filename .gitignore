@@ -1,5 +1,13 @@
-#DATABASES
-.sqlite3
-
-#migrations
+# Folders
+venv
+# migrations
 __pycache__
+logs
+
+# DB
+*.sqlite3
+*.log
+
+# Editors.
+.idea
+.vscode
