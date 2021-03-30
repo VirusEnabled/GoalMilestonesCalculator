@@ -11,7 +11,7 @@ class BaseModel(models.Model):
 
 
 class Objective(BaseModel):
-    choices = [('DESC','DESC'),('ASC','ASC'),]
+    choices = [('Descendente','DESC'),('Ascendente','ASC'),]
     description = models.CharField(max_length=150)
     metric = models.CharField(max_length=30)
     order = models.CharField(max_length=20, choices=choices, default=choices[0])
@@ -31,5 +31,5 @@ class Consecution(BaseModel):
 
 
 class RenumerationResult(BaseModel):
-    objective = models.ForeignKey(Objective, models.CASCADE)
+    objective = models.OneToOneField(Objective, models.CASCADE)
     interpolation = models.FloatField(default=0.00)

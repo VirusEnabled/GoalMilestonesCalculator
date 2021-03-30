@@ -88,7 +88,7 @@ class LoginUser(View):
             auth  = authenticate(request, username=user, password=data['password'])
             if auth:
                 return self.form_valid(form)
-            error = "Your email or password is incorrect, please try again."
+            error = "Correo o Contraseña incorrecta"
         return self.form_invalid(form, error=error)
 
     def form_valid(self, form):
@@ -102,7 +102,7 @@ class LoginUser(View):
         user = User.objects.get(email__exact=form_data['email'])
         login(self.request, user)
         self.request.session.set_expiry(self.request.session.get_expiry_age() * 4)
-        messages.success(self.request, 'You have been successfully logged in')
+        messages.success(self.request, 'Ha sido logueado exitosamente!')
         return self.redirect_success()
 
 
@@ -113,9 +113,9 @@ class LoginUser(View):
         :return: redirect response
         """
         self.extra_context['form'] = form
-        messages.error(self.request,f'There was an error with your request,'
+        messages.error(self.request,f'Hubo un error con su solicitud: '
                                     f' {[form.errors[error] for error in form.errors] if not error else error}.'
-                                    f' Please try again.')
+                                    f' Por favor trate de nuevo.')
         return render(self.request,self.template_name, self.extra_context)
 
 
@@ -130,17 +130,22 @@ class LoginUser(View):
 @login_required(redirect_field_name='next', login_url='website:login')
 def logout_user(request):
     logout(request)
-    messages.success(request,'You have been successfully logged out!')
+    messages.success(request,'Ha sido deslogueado exitosamente!')
     return redirect('website:login')
 
 
 class Dashboard(TemplateView, LoginRequiredMixin):
     template_name = 'website/dashboard.html'
     redirect_field_name = 'next'
-    permission_denied_message = 'In order to access to this part of the site, you must be logged in.'
+    permission_denied_message = 'Para poder acceder a esta area del sitio, debe de estar logueado'
     login_url = 'website:login'
     success_redirect = 'website:dashboard'
     extra_context = {}
+
+
+    def get_context_data(self, **kwargs):
+        self.extra_context['objective_form'] = ObjectiveForm(self.request.POST)
+        return super().get_context_data()
 
 
 

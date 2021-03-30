@@ -50,45 +50,79 @@
     }
 </style>
     <h2 id="title">
-        Signals App
+        Calculador de Metas-GMC
     </h2>
-<div class="form-container">
 
-    <form id="base-selector-form" action="{% url 'website:dashboard' %}" method="POST">
-        {% csrf_token %}
-        <div class="card select-form">
-            {{form|crispy}}
-            <button id="go" class="btn btn-round btn-success" type="submit">
-                Go <i class="ion-play"></i>
-            </button>
-            <a id="filters" data-toggle="modal" data-target="#action_form" class="btn btn-secondary btn-round">
-                Filters
-            </a>
-        </div>
+<hr>
 
-    </form>
+<a class="btn btn-success main-btn" data-toggle="modal"
+                               data-target="#action_form">
+    <i class="ion-plus"></i> Agregar Objectivo
+</a>
 
+<div class="list_container">
+{% include 'includes/responsive_table.html' %}
 </div>
 <!-- main form class to use in order to generate the base modals based on each item of the list as well -->
 <!-- Modal normal sign in start -->
 <div id="action_form" class="modal fade create-form" role="dialog">
-    <div class="modal-dialog card">
+    <div class="modal-dialog modal-lg card">
         <i class="ion-close modal-close" data-dismiss="modal"></i>
         <hr>
         <div class="modal-header">
             <h3 style="text-align:center;">
-                Stock Selection for operations
+                Calculo de Metas
             </h3>
         </div>
         <div class="card-block">
             <form action="{% url 'website:dashboard' %}" method="POST">
                 {% csrf_token %}
                 <div class="modal-body">
-                    {{filter_form|crispy}}
+
+                    {{objective_form|crispy}}
+                    <hr>
+                    <div class="metrics_list">
+                        <h4>
+                            Metricas
+                        </h4>
+                        <a class="btn btn-primary"> <i class="ion-plus"></i> Agregar</a>
+                        <hr>
+                        <div id="metrics_holder">
+                            <div id="metric_1" class="form-control row metric_container">
+                                <div class="col-sm-8">
+                                    <input type="text" placeholder="Descripcion" class="form-control first_item">
+                                </div>
+                                <div class="col">
+                                    <input type="text" placeholder="Metrica" class="form-control second_item">
+                                </div>
+                                <div class="col">
+                                    <input type="text" placeholder="% de Concecucion" class="form-control third_item">
+                                </div>
+
+                                <a id="delete_1" class="metric_deleter"><h4><i class="ion-trash-a metric_deleter"></i></h4></a>
+                            </div>
+
+                            <div id="metric_2" class="form-control row metric_container">
+                                <div class="col-sm-8">
+                                    <input type="text" placeholder="Descripcion" class="form-control first_item">
+                                </div>
+                                <div class="col">
+                                    <input type="text" placeholder="Metrica" class="form-control second_item">
+                                </div>
+                                <div class="col">
+                                    <input type="text" placeholder="% de Concecucion" class="form-control third_item">
+                                </div>
+
+                                <a id="delete_2" class="metric_deleter"><h4><i class="ion-trash-a metric_deleter"></i></h4></a>
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="close_modal" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button class="btn btn-success" type="submit">Generate Graph</button>
+                    <button id="close_modal" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success" type="submit">Calcular Objetivo</button>
                 </div>
             </form>
 
