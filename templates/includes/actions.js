@@ -25,23 +25,17 @@ the same properties
 returns: Null
 */
 
-    var container_holder = document.getElemetById('metrics_holder');
+    var container_holder = document.getElementById('metrics_holder');
     var metrics = document.getElementsByClassName('metric_container');
     var last_metric = metrics[metrics.length-1];
-    var metric_div = document.createElement('div');
-    metric_div.setAttribute('class','metric_container');
-    metric_div.setAttribute('id',`metric_${metrics.length+1}`);
-    var description = document.createElement('input');
-    var metric = document.createElement('input');
-    var concecution = document.createElement('input');
-    concecution.setAttribute('placeholder',"% de concecucion")
-
-    var delete_btn = document.getElementsByClassName('metric_deleter');
-
+    var new_metric = last_metric.cloneNode(true);
+    var mtr_id = last_metric.getAttribute('id')
+    new_metric.setAttribute('id',`${mtr_id[mtr_id]}`)
+    container_holder.appendChild(last_metric.cloneNode(true))
 }
 
 
-function removeMetricDiv(div_id){
+function removeMetricDiv(e){
     /*
     removes the given metric div
     by finding it by the div_id
@@ -50,27 +44,56 @@ function removeMetricDiv(div_id){
     since we need atleast 2 metrics to work with
 
     */
+
+    goals = document.getElementsByClassName("metric_container");
+    if(goals.length <= 2){
+
+        toastr.error("No se puede remover mas metas, por defecto deben de existir 2")
+    }
+    else
+    {
+        e.target.parentNode.remove()
+
+    }
 }
 
 
-function collectFormData(){
+function parse_values(array, dtype){
+/*
+    parses the values of the array or
+    return null if there's an empty string or if
+    the vale don't match the given datatype
+*/
+    final_values = []
+    for(var i=0;i<array.length;i++){
+            var value = (dtype=='str')?array[i]: (parseFloat(array[i]).toString()=='NaN')? null: parseFloat(array[i]);
+
+            if(value == '' || value== null)
+            {
+                return "No se puede procesar un valor vacio, por favor de llenar los campos."
+            }
+            final_values.push(value);
+    }
+    return final_values;
+
+}
+
+function collectFormData(update=false){
     /*
     collects all of the data
     and prepares it to be processed
     in a object
     */
+    var class_suffix = (!update) ? '':'update_'
+    var form_data = {};
+    var error = ``;
+    var descriptions = document.getElementsByClassName(`${class_suffix}meta_description`);
+    var goals  = document.getElementsByClassName(`${class_suffix}meta_value`);
+    var percentage_concecution = document.getElementsByClassName(`${class_suffix}meta_consecution`);
 
 }
 
 
-function removeObjective(objective_id){
-  /*
-    removes the given objective
-    this is done by sending a ajax request
-  */
-
-
-}
 
 
 function loadObjectiveList(){
@@ -78,19 +101,33 @@ function loadObjectiveList(){
     loads the list of objectives after being updated
     this is performed via ajax
   */
+  var requester = new XMLHttpRequest();
+
+}
+
+function close_modal(modal_id){
+$(`#${modal_id}`).modal('hide');
+
+}
+
+function createObjective()
+{
+
+
+
 
 }
 
 
-
-function delete_record(option, unique_id){
+function delete_record(unique_id){
 
     var sender = new XMLHttpRequest();
-    var payload = JSON.stringify({'option':option,
-    "unique_id":unique_id
+    var token = getCookie('authtoken');
+    var payload = JSON.stringify({
+    "authtoken":token
     })
 
-    sender.open('POST','/admintr/auth/delete_record/'+unique_id+'/'+option)
+    sender.open('POST','/delete_objective/'+unique_id+'/')
     var csrf = getCookie('csrftoken');
     sender.setRequestHeader('X-CSRFToken', csrf);
     sender.setRequestHeader("Content-Type", "application/JSON");
@@ -101,9 +138,11 @@ function delete_record(option, unique_id){
                 var response = JSON.parse(this.responseText);
                 if(this.status == 200)
                 {
-//                    toastr.success("The record was successfully deleted",'Success')
-                    console.log(response.redirect_url);
-                    window.location.href = response.redirect_url
+                    toastr.success("El record ha sido borrado existosamente!!",'Success')
+                    loadObjectiveList();
+                    close_modal();
+
+
                 }
 
                 else

@@ -11,7 +11,11 @@
             </th>
 
             <th>
-                Resultado
+                Valor de Aceptacion
+            </th>
+
+            <th>
+                % de Consecucion
             </th>
 
             <th>
@@ -21,7 +25,7 @@
         </thead>
 
         <tbody>
-            {% for row in objective_list %}
+            {% for objective in objective_list %}
             <tr>
                 <td>
                     {{objective.id}}
@@ -30,8 +34,12 @@
                     {{objective.metric}}
                 </td>
                  <td>
-                    {{objective.renumerationresult}}
+                    {{objective.interpolation.x_new}}
                 </td>
+                <td>
+                    {{objective.interpolation.consecution_percentage}}
+                </td>
+
                  <td>
                         <div class="btn-group dropdown-split-primary">
                         <button type="button" class="btn btn-primary"><i class="ion-gear-b"></i> Acciones </button>
@@ -39,13 +47,95 @@
                             <span class="sr-only">Toggle primary</span>
                         </button>
                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(113px, 40px, 0px); top: 0px; left: 0px; will-change: transform;">
-                            <a class="dropdown-item waves-effect waves-light" href="#"> <i class="ion-eye"></i> Mostrar detalles </a>
-                            <a class="dropdown-item waves-effect waves-light" href="#"><i class="ion-edit"></i> Editar </a>
+                            <a class="dropdown-item waves-effect waves-light" data-toggle="modal" data-target="#show-objective-{{objective.id}}"> <i class="ion-eye"></i> Mostrar Metas </a>
+                            <a class="dropdown-item waves-effect waves-light" onclick="modify_objective({{objective}})"><i class="ion-edit"></i> Editar </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item waves-effect waves-light" href="#"><i class="ion-trash-a"></i> Borrar Registro </a>
+                            <a class="dropdown-item waves-effect waves-light" data-toggle="modal" data-target="#show-objective-{{objective.id}}"><i class="ion-trash-a"></i> Borrar Registro </a>
                         </div>
                         </div>
                 </td>
+
+            <!-- Show Details Modal -->
+            <div id="show-objective-{{objective.id}}" class="modal fade create-form" role="dialog">
+                    <div class="modal-dialog card">
+                        <i class="ion-close" data-dismiss="modal" onclick="close_modal('show-objective-{{objective.id}}')"
+                           style="margin-left:90%; margin-top:10px; margin-right:1px;"></i>
+                        <hr>
+                            <div class="card-block">
+                                    <div class="modal-body">
+                                       <h4>
+                                           Detalle de Metas del objetivo
+                                       </h4>
+                                    <div class="table_list_container">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th role="heading">
+                                                        Descripcion
+                                                    </th>
+
+                                                    <th role="heading">
+                                                        Meta
+                                                    </th>
+
+                                                    <th role="heading">
+                                                        % de Consecucion
+                                                    </th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {% for goal in objective.goals %}
+                                                    <tr>
+                                                        <td>
+                                                            {{goal.description }}
+                                                        </td>
+                                                        <td>
+                                                            {{goal.goal }}
+                                                        </td>
+                                                        <td>
+                                                            {{goal.consecution_percentage }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal" onclick="close_modal('show-objective-{{objective.id}}')">Cerrar</button>
+                                    </div>
+                            </div>
+                    </div>
+                </div>
+            <!-- end show details modal -->
+
+            <!-- Delete record modal -->
+
+                <div id="delete-objective-{{objective.id}}" class="modal fade create-form" role="dialog">
+                    <div class="modal-dialog card">
+                        <i class="ion-close" data-dismiss="modal" onclick="close_modal('delete-objective-{{objective.id}}')"
+                           style="margin-left:90%; margin-top:10px; margin-right:1px;"></i>
+                        <hr>
+                            <div class="card-block">
+                                    <div class="modal-body">
+                                    <h4 class="lead"> Esta seguro que quiere borrar el record? </h4>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="close_modal('delete-objective-{{objective.id}}')">Cancelar</button>
+                                    <button class="btn btn-danger" onclick="delete_record('{{objective.id}}')">Borrar Record</button>
+                                    </div>
+                            </div>
+                    </div>
+                </div>
+
+
+            <!-- End delete -->
             </tr>
 
             {% empty %}

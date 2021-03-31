@@ -25,24 +25,17 @@ class LoginForm(Form):
         """
         users = User.objects.filter(email=field)
         if not users:
-            self.add_error('email','The email provided is not registered with us, '
-                                   'please try to contact administration.')
+            self.add_error('email','El correo proveido no esta registrado para acceder a esta plataforma.'
+                                   'Favor de contactar al administador para resolver el problema.')
 
 
-class OrderChoiceField(ChoiceField):
-    def __init__(self,**kwargs):
-        self.choices = [('Descendente','DESC'),('Ascendente','ASC'),]
-        super().__init__(choices=self.choices,**kwargs)
+class ObjectiveForm(Form):
+    metrica = CharField(max_length=30)
+    descripcion = CharField(max_length=150, widget=Textarea())
+    valor_de_acceptacion = FloatField()
 
-
-class ObjectiveForm(ModelForm):
-    class Meta:
-        model = Objective
-        fields = ['metric','description']
-    order = OrderChoiceField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.keys():
             self.fields[field].widget.attrs = {'class' : "form-control"}
-        # self.fields['order'].widget=widgets.ChoiceWidget(attrs={'class': 'form-control'})

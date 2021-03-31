@@ -57,3 +57,5 @@ django_channels
 whitenoise
 django_celery_results
 django_celery_beat
+selenium
+scipy

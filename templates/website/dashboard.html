@@ -55,7 +55,7 @@
 
 <hr>
 
-<a class="btn btn-success main-btn" data-toggle="modal"
+<a class="btn btn-success main_btn_calculator" data-toggle="modal"
                                data-target="#action_form">
     <i class="ion-plus"></i> Agregar Objectivo
 </a>
@@ -70,50 +70,49 @@
         <i class="ion-close modal-close" data-dismiss="modal"></i>
         <hr>
         <div class="modal-header">
-            <h3 style="text-align:center;">
-                Calculo de Metas
+            <h3 style="text-align:center; margin-left: 21px;">
+                Calculo de Objetivos
             </h3>
         </div>
         <div class="card-block">
             <form action="{% url 'website:dashboard' %}" method="POST">
                 {% csrf_token %}
                 <div class="modal-body">
-
                     {{objective_form|crispy}}
                     <hr>
                     <div class="metrics_list">
                         <h4>
-                            Metricas
+                            Metas
                         </h4>
-                        <a class="btn btn-primary"> <i class="ion-plus"></i> Agregar</a>
+                        <a class="btn btn-primary" onclick="AddMetricDiv();"> <i class="ion-plus"></i> Agregar</a>
                         <hr>
                         <div id="metrics_holder">
                             <div id="metric_1" class="form-control row metric_container">
                                 <div class="col-sm-8">
-                                    <input type="text" placeholder="Descripcion" class="form-control first_item">
+                                    <input type="text" placeholder="Descripcion" class="form-control meta_description">
                                 </div>
                                 <div class="col">
-                                    <input type="text" placeholder="Metrica" class="form-control second_item">
+                                    <input type="text" placeholder="Meta" class="form-control meta_value">
                                 </div>
                                 <div class="col">
-                                    <input type="text" placeholder="% de Concecucion" class="form-control third_item">
+                                    <input type="text" placeholder="% de Consecucion" class="form-control meta_consecution">
                                 </div>
 
-                                <a id="delete_1" class="metric_deleter"><h4><i class="ion-trash-a metric_deleter"></i></h4></a>
+                                <h4><i id="delete_1" class="ion-trash-a metric_deleter"></i></h4>
                             </div>
 
                             <div id="metric_2" class="form-control row metric_container">
                                 <div class="col-sm-8">
-                                    <input type="text" placeholder="Descripcion" class="form-control first_item">
+                                    <input type="text" placeholder="Descripcion" class="form-control meta_description">
                                 </div>
                                 <div class="col">
-                                    <input type="text" placeholder="Metrica" class="form-control second_item">
+                                    <input type="text" placeholder="Meta" class="form-control meta_value">
                                 </div>
                                 <div class="col">
-                                    <input type="text" placeholder="% de Concecucion" class="form-control third_item">
+                                    <input type="text" placeholder="% de Consecucion" class="form-control meta_consecution">
                                 </div>
 
-                                <a id="delete_2" class="metric_deleter"><h4><i class="ion-trash-a metric_deleter"></i></h4></a>
+                                <h4><i id="delete_2" class="ion-trash-a metric_deleter"></i></h4>
                             </div>
                         </div>
 
