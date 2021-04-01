@@ -76,7 +76,7 @@ class MainSiteTestCase(TestCase):
         data = {
             'authtoken': token.key
         }
-        response = self.client.get(path=endpoint,data=data)
+        response = self.client.get(path=endpoint,data=data, headers={'x-authtoken':token.key})
         self.assertEqual(response.status_code,200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
         self.assertIn('objective_list' , response.json().keys(),"The request was a success but it didn't render the list")
@@ -93,8 +93,8 @@ class MainSiteTestCase(TestCase):
         data = {
             'authtoken': token.key,
             'goals': json.dumps([1,2,3]),
-            'goals_description':json.dumps(['simple goal','simple goal','simple goal']),
-            'consecution_percentages':json.dumps([20,30,50]),
+            'goals_description':['simple goal','simple goal','simple goal'],
+            'consecution_percentages':[20,30,50],
             'description':'adding new values for our clients',
             'metric': 'new increases for clients',
             'new_x': 2.0,
@@ -137,8 +137,8 @@ class MainSiteTestCase(TestCase):
         data = {
             'authtoken': token.key,
             'goals': json.dumps([1, 2, 3]),
-            'goals_description': json.dumps(['simple goal', 'simple goal', 'simple goal']),
-            'consecution_percentages': json.dumps([20, 30, 50]),
+            'goals_description': ['simple goal', 'simple goal', 'simple goal'],
+            'consecution_percentages': [20, 30, 50],
             'description': 'adding new values for our clients',
             'metric': 'new increases for clients',
             'new_x': 10.0,
@@ -175,8 +175,8 @@ class MainSiteTestCase(TestCase):
         data = {
             'authtoken': token.key,
             'goals': json.dumps([g.goal for g in objective.objectivegoal_set.all()]),
-            'goals_description': json.dumps([g.description for g in objective.objectivegoal_set.all()]),
-            'consecution_percentages': json.dumps([g.consecution_percentage for g in objective.objectivegoal_set.all()]),
+            'goals_description': [g.description for g in objective.objectivegoal_set.all()],
+            'consecution_percentages': [g.consecution_percentage for g in objective.objectivegoal_set.all()],
             'description': 'adding new values for ourselves',
             'objective_id': objective.id,
             'new_x': 91.0,

@@ -15,6 +15,7 @@ urlpatterns = \
     path('logout',logout_user,name='logout'),
     path('handle_objective/', handler_objective,name='handle_objective'),
     path('list_objectives/', restful_render_objectives, name='list_objectives'),
+    path('get_objective/<int:objective_id>',restful_render_objective,name='get_objective'),
     path('delete_objective/<int:objective_id>', remove_objective, name='delete_objective'),
 
     ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

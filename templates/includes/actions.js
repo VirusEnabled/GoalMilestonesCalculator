@@ -15,27 +15,7 @@ function getCookie(name)
     return cookieValue;
 }
 
-
-function AddMetricDiv(){
-
-/*
-clones the div for the exiting
-metrics so that it appends more items with
-the same properties
-returns: Null
-*/
-
-    var container_holder = document.getElementById('metrics_holder');
-    var metrics = document.getElementsByClassName('metric_container');
-    var last_metric = metrics[metrics.length-1];
-    var new_metric = last_metric.cloneNode(true);
-    var mtr_id = last_metric.getAttribute('id')
-    new_metric.setAttribute('id',`${mtr_id[mtr_id]}`)
-    container_holder.appendChild(last_metric.cloneNode(true))
-}
-
-
-function removeMetricDiv(e){
+function removeMetricDiv(div_id){
     /*
     removes the given metric div
     by finding it by the div_id
@@ -52,11 +32,71 @@ function removeMetricDiv(e){
     }
     else
     {
-        e.target.parentNode.remove()
+        goner = document.getElementById(div_id);
+        goner.remove()
 
     }
 }
+// still needs some work
+function generate_deleter(delete_id){
 
+    var deleter = document.createElement('button')
+    deleter.className="ion-trash-a metric_deleter btn btn-danger"
+    deleter.setAttribute('id',delete_id)
+    deleter.style.width='8px';
+    deleter.style.marginTop="4px";
+    deleter.style.marginLeft="-7px";
+    deleter.style.fontSize="23px";
+    deleter.addEventListener('onclick',function(){
+    /*
+    removes the given metric div
+    by finding it by the div_id
+
+    if there's less than 3, it returns an error
+    since we need atleast 2 metrics to work with
+
+    */
+
+    goals = document.getElementsByClassName("metric_container");
+    if(goals.length <= 2){
+
+        toastr.error("No se puede remover mas metas, por defecto deben de existir 2")
+    }
+    else
+    {
+        alert(this);
+//        goner = document.getElementById(div_id);
+        this.parentNode.remove()
+
+    }
+});
+    return deleter;
+}
+
+function AddMetricDiv(){
+
+    /*
+    clones the div for the exiting
+    metrics so that it appends more items with
+    the same properties
+    returns: Null
+    */
+
+    var container_holder = document.getElementById('metrics_holder');
+    var metrics = document.getElementsByClassName('metric_container');
+    var last_metric = metrics[metrics.length-1];
+    var new_metric = last_metric.cloneNode(true);
+    var deleter = new_metric.getElementsByClassName('metric_deleter')[0]
+    deleter.remove();
+    var mtr_id = last_metric.getAttribute('id')
+    var new_id = parseInt(mtr_id) + 1
+    new_metric.setAttribute('id',`${new_id}`)
+    var new_deleter = generate_deleter(`deleter_${new_id}`)
+    console.log(`${this},${new_deleter},${new_deleter==this}`)
+    new_metric.appendChild(new_deleter);
+    container_holder.appendChild(new_metric.cloneNode(true));
+
+}
 
 function parse_values(array, dtype){
 /*
@@ -66,7 +106,7 @@ function parse_values(array, dtype){
 */
     final_values = []
     for(var i=0;i<array.length;i++){
-            var value = (dtype=='str')?array[i]: (parseFloat(array[i]).toString()=='NaN')? null: parseFloat(array[i]);
+            var value = (dtype=='str')?array[i].value: (parseFloat(array[i].value).toString()=='NaN')? null: parseFloat(array[i].value);
 
             if(value == '' || value== null)
             {
@@ -87,9 +127,18 @@ function collectFormData(update=false){
     var class_suffix = (!update) ? '':'update_'
     var form_data = {};
     var error = ``;
-    var descriptions = document.getElementsByClassName(`${class_suffix}meta_description`);
-    var goals  = document.getElementsByClassName(`${class_suffix}meta_value`);
-    var percentage_concecution = document.getElementsByClassName(`${class_suffix}meta_consecution`);
+    var descriptions = document.getElementsByClassName(`meta_description`);
+    var goals  = document.getElementsByClassName(`meta_value`);
+    var percentage_concecution = document.getElementsByClassName(`meta_consecution`);
+    goals_values = [descriptions, goals, percentage_concecution]
+    for(i=0;i<goals_values.length;i++)
+    {
+        gathered_data = parse_values(goals_values[i],'str')
+
+        if (ist)
+
+
+    }
 
 }
 
@@ -117,7 +166,6 @@ function createObjective()
 
 
 }
-
 
 function delete_record(unique_id){
 
@@ -155,6 +203,7 @@ function delete_record(unique_id){
     }
     sender.send(payload);
 }
+
 
 
 function get_page(model_name, page_number, per_page, detail_id=null)

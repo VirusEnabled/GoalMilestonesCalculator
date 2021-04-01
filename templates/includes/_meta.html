@@ -23,7 +23,6 @@
 <!-- Favicon -->
 <link rel="icon" href="{% static 'images/logox.jpeg'%}" type="image/jpeg">
 
-
 <!-- Jquery -->
 <script type="text/javascript" src="\static\adminty\files\bower_components\jquery\js\jquery.min.js"></script>
 <!-- Icons -->
@@ -120,10 +119,6 @@
 <!-- Icons -->
 <link rel="stylesheet" href="{% static 'assets/vendor/nucleo/css/nucleo.css'%}" type="text/css">
 
-<!-- TOASTR -->
-<link rel="stylesheet" href="{% static 'css/toastr.css'%}">
-<script src="{% static 'scripts/toastr.js'%}"></script>
-<!-- TOASTR -->
 
 
 <!-- Google font--><link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
@@ -187,19 +182,17 @@ gtag('config', 'UA-23581568-13');
 
 
 <!-- CUSTOM -->
-<!--<link rel="stylesheet" type="text/css" href="{% static 'css/main_style.css'%}">-->
-<script type="text/javascript" src="{% static 'scripts/toastr.js'%}"></script>
+<!-- TOASTR -->
+<link rel="stylesheet" href="{% static 'css/toastr.css'%}">
+<script src="{% static 'scripts/toastr.js'%}"></script>
+<!-- TOASTR -->
 <script type="text/javascript" src="{% static 'scripts/basefile_scripts.js'%}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'css/toastr.css'%}">
-
-
-<script>
-    {% include "includes/actions.js" %}
-</script>
+<!--<link rel="stylesheet" type="text/css" href="{% static 'css/main_style.css'%}">-->
 
 
 </head>
 {% include 'includes/_main_style.html'  %}
+
 <!-- Pre-loader start -->
 <!-- CUSTOM PRELOADER -->
 <div class="theme-loader" style="padding-top:25%;">

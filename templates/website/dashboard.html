@@ -5,6 +5,7 @@
 {% csrf_token %}
 {% load static %}
 {% load crispy_forms_tags %}
+
 <style>
     .front-selector{
     width: 73%;
@@ -60,14 +61,14 @@
     <i class="ion-plus"></i> Agregar Objectivo
 </a>
 
-<div class="list_container">
+<div id="rest_list_container" class="list_container">
 {% include 'includes/responsive_table.html' %}
 </div>
 <!-- main form class to use in order to generate the base modals based on each item of the list as well -->
 <!-- Modal normal sign in start -->
 <div id="action_form" class="modal fade create-form" role="dialog">
     <div class="modal-dialog modal-lg card">
-        <i class="ion-close modal-close" data-dismiss="modal"></i>
+        <i class="ion-close modal-close" data-dismiss="modal" id="closer" onclick="close_modal('action_form');"></i>
         <hr>
         <div class="modal-header">
             <h3 style="text-align:center; margin-left: 21px;">
@@ -75,7 +76,6 @@
             </h3>
         </div>
         <div class="card-block">
-            <form action="{% url 'website:dashboard' %}" method="POST">
                 {% csrf_token %}
                 <div class="modal-body">
                     {{objective_form|crispy}}
@@ -87,32 +87,30 @@
                         <a class="btn btn-primary" onclick="AddMetricDiv();"> <i class="ion-plus"></i> Agregar</a>
                         <hr>
                         <div id="metrics_holder">
-                            <div id="metric_1" class="form-control row metric_container">
+                            <div id="1" class="form-control row metric_container">
                                 <div class="col-sm-8">
-                                    <input type="text" placeholder="Descripcion" class="form-control meta_description">
+                                    <input type="text" placeholder="Descripcion" class="form-control meta_description" required>
                                 </div>
                                 <div class="col">
-                                    <input type="text" placeholder="Meta" class="form-control meta_value">
+                                    <input type="text" placeholder="Meta" class="form-control meta_value" required>
                                 </div>
                                 <div class="col">
-                                    <input type="text" placeholder="% de Consecucion" class="form-control meta_consecution">
+                                    <input type="text" placeholder="% de Consecucion" class="form-control meta_consecution" required>
                                 </div>
-
-                                <h4><i id="delete_1" class="ion-trash-a metric_deleter"></i></h4>
+                                <i id="deleter_1" class="ion-trash-a metric_deleter" onclick="removeMetricDiv(1)"></i>
                             </div>
 
-                            <div id="metric_2" class="form-control row metric_container">
+                            <div id="2" class="form-control row metric_container">
                                 <div class="col-sm-8">
-                                    <input type="text" placeholder="Descripcion" class="form-control meta_description">
+                                    <input type="text" placeholder="Descripcion" class="form-control meta_description" required>
                                 </div>
                                 <div class="col">
-                                    <input type="text" placeholder="Meta" class="form-control meta_value">
+                                    <input type="text" placeholder="Meta" class="form-control meta_value" required>
                                 </div>
                                 <div class="col">
-                                    <input type="text" placeholder="% de Consecucion" class="form-control meta_consecution">
+                                    <input type="text" placeholder="% de Consecucion" class="form-control meta_consecution" required>
                                 </div>
-
-                                <h4><i id="delete_2" class="ion-trash-a metric_deleter"></i></h4>
+                                <i id="deleter_2" class="ion-trash-a metric_deleter" onclick="removeMetricDiv(2)"></i>
                             </div>
                         </div>
 
@@ -120,11 +118,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="close_modal" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-success" type="submit">Calcular Objetivo</button>
+                    <button id="close_modal" type="button" class="btn btn-secondary" onclick="close_modal('action_form');">Cancelar</button>
+                    <button class="btn btn-success" onclick="handleObjective();">Calcular Objetivo</button>
                 </div>
-            </form>
-
         </div>
 
     </div>
