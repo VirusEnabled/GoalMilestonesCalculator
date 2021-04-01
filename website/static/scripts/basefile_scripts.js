@@ -269,7 +269,7 @@ function loadObjectiveList(){
 
 }
 
-function close_modal(modal_id){
+function close_my_modal(modal_id){
     if(modal_id=='action_form'){cleanForm();}
     $(`#${modal_id}`).modal('hide');
 
@@ -410,7 +410,7 @@ function delete_record(unique_id){
                 {
                     toastr.success("El record ha sido borrado existosamente!!",'Success')
                     loadObjectiveList();
-                    close_modal(`delete-objective-${unique_id}`);
+                    close_my_modal(`delete-objective-${unique_id}`);
 
 
                 }
