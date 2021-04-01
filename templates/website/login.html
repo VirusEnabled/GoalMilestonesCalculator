@@ -52,19 +52,17 @@
             <div class="modal-dialog card">
                 <i class="ion-close" data-dismiss="modal" style="margin-left:90%; margin-top:10px; margin-right:1px;"></i>
                 <hr>
-                <form action="{# url 'website:forgot_password_process' #}" method="post">
-                    {% csrf_token %}
                     <div class="card-block">
                             <div class="modal-body">
-                            <h4 class="lead"> Enter your email to recover your account.</h4>
+                            <h4 class="lead" style="text-align:center;"> Si no recuerda su contraseña, le sugerimos contactar
+                            administracion para poder restaurar sus credenciales
+                            </h4>
                                 <br>
-                                <input type="email" name="email" id="" placeholder="Email" class="form-control">
                             </div>
                             <div class="modal-footer">
-                            <button class="btn btn-warning" type="submit">Send Request</button>
+                            <button class="btn btn-secondary" data-dismiss="modal"> Cerrar </button>
                             </div>
                     </div>
-                </form>
             </div>
             </div>
              <!--Modal normal sign in end-->

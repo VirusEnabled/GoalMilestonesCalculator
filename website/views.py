@@ -23,6 +23,7 @@ from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from datetime import timedelta, datetime
 from .helpers import *
 from .forms import *
+from .serializers import ObjectiveSerializer
 from django.views.defaults import page_not_found, server_error
 
 
@@ -168,6 +169,7 @@ class Dashboard(TemplateView, LoginRequiredMixin):
                                                       'x_new':obj.interpolationresult.interpolation}
                                                  } for obj in Objective.objects.all()
                                                 ]
+        print(self.extra_context['objective_list'])
         return super().get_context_data()
 
 
@@ -207,13 +209,11 @@ def restful_render_objectives(request):
     :param request: http request
     :return: JSON response
     """
-    data = request.GET
     result = {}
     final_status = status.HTTP_400_BAD_REQUEST
     objective_list_template = 'includes/responsive_table.html'
-
     try:
-        authenticated = validate_token(data['authtoken'])
+        authenticated = validate_token(request.headers['X-AuthToken'])
         if authenticated:
             result['objective_list'] = render_to_string(objective_list_template,
                                                         context={'objective_list': [
@@ -223,12 +223,54 @@ def restful_render_objectives(request):
                                                                   'description':g.description,
                                                                   'consecution_percentage':g.consecution_percentage
                                                                   }
-                                                             for g in obj.objectivegoal_set.all()],
+                                                             for g in obj.objectivegoal_set.all()
+                                                                 ],
                                                                 'interpolation':
                                                                  {'consecution_percentage':
                                                   obj.interpolationresult.consecution_percentage,
                                                                   'x_new':obj.interpolationresult.interpolation}
                                                              } for obj in Objective.objects.all()]})
+            final_status = status.HTTP_200_OK
+        else:
+            final_status = status.HTTP_401_UNAUTHORIZED
+            raise Exception("Para poder acceder a esta informacion, debe estar authenticado.")
+
+    except Exception as X:
+        result['error'] =  f"Hubo un problema con su solicitud: {X}"
+
+    return Response(content_type='application/json', data=result, status=final_status)
+
+
+@api_view(http_method_names=['POST'])
+def restful_render_objective(request, objective_id):
+    """
+    sends the existing objectives in the DB
+
+    :param request: http request
+    :return: JSON response
+    """
+    data = request.data
+    result = {}
+    final_status = status.HTTP_400_BAD_REQUEST
+    try:
+        authenticated = validate_token(data['authtoken'])
+        if authenticated:
+            obj = Objective.objects.get(pk=objective_id)
+            result['objective'] = json.dumps({'id':objective_id,
+                                   'description':obj.description,
+                                   'metric':obj.metric,
+                                     'goals':[
+                                         {'goal':g.goal,
+                                          'description':g.description,
+                                          'consecution_percentage':g.consecution_percentage
+                                          }
+                                     for g in obj.objectivegoal_set.all()
+                                         ],
+                                        'interpolation':
+                                         {'consecution_percentage':
+                          obj.interpolationresult.consecution_percentage,
+                                          'x_new':obj.interpolationresult.interpolation}
+                                                             })
             final_status = status.HTTP_200_OK
         else:
             final_status = status.HTTP_401_UNAUTHORIZED
@@ -254,15 +296,17 @@ def handler_objective(request:object) -> Response:
     """
     final_status = status.HTTP_400_BAD_REQUEST
     response_data = {}
-    required_params = ['goals','consecution_percentages','goals_description','authtoken','metric','description',
+    required_params = ['goals','consecution_percentages','goals_descriptions','authtoken','metric','description',
                        'new_x']
     try:
         request_data = request.data
         authenticated = validate_token(request_data['authtoken'])
         if authenticated:
-            goals = json.loads(request_data['goals'])
-            consecution_percentages = json.loads(request_data['consecution_percentages'])
-            goals_descriptions =json.loads(request_data['goals_description'])
+            print(request_data['goals'])
+            goals =[float(x) for x in request_data['goals']]
+            # pdb.set_trace()
+            consecution_percentages = [float(x) for x in request_data['consecution_percentages']]
+            goals_descriptions =request_data['goals_descriptions']
 
             if len(goals) == len(consecution_percentages)== len(goals_descriptions):
                 if len(goals) < 2:
