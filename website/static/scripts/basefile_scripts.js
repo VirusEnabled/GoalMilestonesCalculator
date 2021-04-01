@@ -15,6 +15,7 @@ toastr.options = {
   "showMethod": "fadeIn",
   "hideMethod": "fadeOut"
 }
+holder = {objective:null,}
 
 function getCookie(name)
 {
@@ -32,7 +33,6 @@ function getCookie(name)
     }
     return cookieValue;
 }
-holder = {}
 function removeMetricDiv(div_id){
     /*
     removes the given metric div
@@ -283,7 +283,7 @@ function handleObjective()
     var objective_data = collectFormData();
 //    console.log(token);
     objective_data.authtoken=token;
-    alert(holder);
+//    alert(holder);
     if (typeof(holder)==typeof({})){
         objective_data.objective_id=holder.objective.id;
     }
