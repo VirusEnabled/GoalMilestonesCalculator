@@ -87,6 +87,10 @@ function AddMetricDiv(num=1){
             var new_id = parseInt(mtr_id) + 1
             new_metric.setAttribute('id',`${new_id}`)
             inputs = new_metric.getElementsByTagName('input')
+            for (i=0;i<inputs.length;i++){
+
+            inputs[i].value="";
+            }
             var new_deleter = generate_deleter(`deleter_${new_id}`)
         //    console.log(`${this},${new_deleter},${new_deleter==this}`)
             new_metric.appendChild(new_deleter);
