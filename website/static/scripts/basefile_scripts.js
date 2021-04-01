@@ -284,7 +284,7 @@ function handleObjective()
 //    console.log(token);
     objective_data.authtoken=token;
 //    alert(holder);
-    if (typeof(holder)==typeof({})){
+    if (holder.objective != null){
         objective_data.objective_id=holder.objective.id;
     }
     var payload = JSON.stringify(objective_data)
