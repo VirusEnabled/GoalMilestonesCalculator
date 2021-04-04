@@ -76,7 +76,7 @@ class MainSiteTestCase(TestCase):
         data = {
             'authtoken': token.key
         }
-        response = self.client.get(path=endpoint,data=data, headers={'x-authtoken':token.key})
+        response = self.client.get(path=endpoint,data=data, headers={'x-authtoken': token.key})
         self.assertEqual(response.status_code,200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
         self.assertIn('objective_list' , response.json().keys(),"The request was a success but it didn't render the list")

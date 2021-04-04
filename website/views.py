@@ -316,7 +316,8 @@ def handler_objective(request:object) -> Response:
                                                         consecution=consecution_percentages)
                 if not values_validation['status']:
                     raise Exception(f"{values_validation['error']}")
-                lineal_interpolation_result = calculate_lineal_interpolation(x_new=float(request_data['new_x']),
+                lineal_interpolation_result = calculate_lineal_interpolation(
+                                                                    x_new=float(request_data['new_x']),
                                                                       y_values=consecution_percentages,
                                                                       order=values_validation['order'],
                                                                       x_values=goals)

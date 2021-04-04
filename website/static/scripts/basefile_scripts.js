@@ -307,6 +307,7 @@ function handleObjective()
                     toastr.success("El record ha sido Agregado exitosamente!!",'Success')
                     loadObjectiveList();
                     cleanForm();
+                    holder.objective = null;
                     document.getElementById('closer').click();
 
                 }
