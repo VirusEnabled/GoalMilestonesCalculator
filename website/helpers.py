@@ -20,7 +20,7 @@ def calculate_lineal_interpolation(x_values:list,
     result = {}
     x_new = float(x_new)
     try:
-        percentage_of_consecution = np.interp(x=x_new,fp=y_values,xp=x_values)
+        percentage_of_consecution = np.interp(x=x_new,fp=y_values, xp=x_values)
         print(x_new, min(x_values), x_values, percentage_of_consecution)
         if order == 'asc' and x_new < min(x_values):
             percentage_of_consecution = 0.00

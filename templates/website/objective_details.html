@@ -9,7 +9,7 @@
     <div class="card objective-container">
         <div class="objective-title">
             <h3>
-                {{objective.metric|title}}
+                <b>Objetivo:</b> {{objective.metric|title}}
             </h3>
 
         </div>
@@ -33,7 +33,7 @@
                 {% if objective.has_consecution_calculated %}
                  <input id="obj_id" type="hidden"
                            value="{{objective.interpolationresult.id}}">
-                <a class="btn btn-success calculate_objective_btn" onclick="modify_consecution('{{objective.interpolationresult.interpolation}}');"><i class="ion-calculator"></i>
+                <a class="btn btn-success calculate_objective_btn" onclick="modify_consecution();"><i class="ion-calculator"></i>
                     Actualizar calculo de Objectivo
                 </a>
                 {% else %}
@@ -46,25 +46,14 @@
                 <h5>
                     Valor alcanzado
                 </h5>
-                    <h6 id="new_x_value">
-                       {% if objective.has_consecution_calculated %}
-                            {{objective.interpolationresult.interpolation}}
-                        {% else %}
-                            No hay un valor asignado todavia
-                        {% endif %}
-                    </h6>
-
-
+                    <input type="text" id="new_x_value" class="form-control cos_values"
+                    disabled value="{% if objective.has_consecution_calculated %}{{objective.interpolationresult.interpolation}}{% endif %}">
                 <h5>
                     Valores de Consecucion
                 </h5>
-                    <h6 id="consecution_value">
-                        {% if objective.has_consecution_calculated %}
-                            {{objective.interpolationresult.consecution_percentage}}
-                        {% else %}
-                            No hay un valor asignado todavia
-                        {% endif %}
-                    </h6>
+                    <input type="text" id="consecution_value" class="form-control cos_values"
+                    disabled value="{% if objective.has_consecution_calculated %}{{objective.interpolationresult.consecution_percentage}}{% endif %}">
+
                 </div>
 
             </div>

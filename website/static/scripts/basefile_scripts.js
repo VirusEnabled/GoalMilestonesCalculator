@@ -271,7 +271,7 @@ function loadObjectiveList(){
 
 function close_my_modal(modal_id){
     if(modal_id=='action_form'){cleanForm();}
-    $(`#${modal_id}`).modal('dismiss');
+    $(`#${modal_id}`).modal('hide');
 }
 
 
@@ -325,15 +325,16 @@ function handleConsecution(objective_id)
     var token = getCookie('authtoken');
     var consecution_create = (document.getElementById('interpolation_op_status').value=='create')?true:false;
     var new_x = document.getElementById('new_x').value;
-    if( parseFloat(new_x).toString() == 'NaN')
+    if( parseFloat(new_x).toString() == 'NaN' || parseFloat(new_x) <= 0)
     {
-        toastr.error('Para poder actualizar el valor, debe de tener un valor numerico aceptable.')
+        toastr.error('Para poder actualizar el valor, debe de tener un valor numerico aceptable. el valor debe ser mayor que cero y no debe tener caracteres alfanumericos')
     }
     else
     {
+
         method = (consecution_create == true)?'POST':'PUT';
         payload = JSON.stringify({'interpolation':new_x, 'objective': objective_id})
-        inter_id = document.getElementById('obj_id').value;
+        inter_id = (consecution_create == false )? document.getElementById('obj_id').value : null;
         console.log(payload, consecution_create)
         destination = (consecution_create == true)?`/api/interpolation_operation/`:`/api/interpolation_operation/${inter_id}/`
         sender.open(method, destination)
@@ -348,18 +349,18 @@ function handleConsecution(objective_id)
                 var response = JSON.parse(this.responseText);
                 if(this.status >=200 && this.status < 300)
                 {
-                    toastr.success(`El record ha sido ${(holder.objective==null)?'Agregado':'Actualizado'} exitosamente!!`,'Success')
-                    console.log(response);
+                    toastr.success(`El record ha sido ${(consecution_create == true)?'Agregado':'Actualizado'} exitosamente!!`,'Success')
+                    console.log(response,response.interpolation, response.cosecution_consecution_percentage);
                     document.getElementById('new_x').value='';
-                    document.getElementById('new_x_value').text=`${response.interpolation}`
-                    document.getElementById('consecution_value').text=`${response.consecution_percentage} %`;
+                    document.getElementById('new_x_value').value=`${response.interpolation}`
+                    document.getElementById('consecution_value').value=`${response.consecution_percentage} %`;
                     close_my_modal('calculate_objective');
                 }
 
                 else
                 {
                    console.log(response);
-                   toastr.error(response.error,'Error');
+                   toastr.error(response.detail,'Error');
 
                 }
 
@@ -372,7 +373,8 @@ function handleConsecution(objective_id)
 }
 
 
-function modify_consecution(interpolation_value){
+function modify_consecution(){
+    var interpolation_value = document.getElementById('new_x_value').value;
     var new_x = document.getElementById('new_x');
     if( parseFloat(interpolation_value).toString() == 'NaN')
     {
