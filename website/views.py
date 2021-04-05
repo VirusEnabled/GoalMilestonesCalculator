@@ -10,20 +10,21 @@ from django.contrib.auth.mixins import LoginRequiredMixin,AccessMixin
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout, authenticate, user_logged_in, user_logged_out
+from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from rest_framework.parsers import JSONParser
 from django.core.files import File as DF
 from functools import wraps
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from datetime import timedelta, datetime
-from .helpers import *
 from .forms import *
-from .serializers import ObjectiveSerializer
+from .serializers import *
+from django.contrib.auth.views import LoginView
 from django.views.defaults import page_not_found, server_error
 
 
@@ -36,44 +37,27 @@ def handler500(request, template_name=None):
     messages.error(request, f"There was an Internal Error, Try contacting your Admin.")
     return redirect('login')
 
-class LoginUser(View):
+class LoginUser(LoginView):
     template_name = 'website/login.html'
     extra_context = {}
     form_class = LoginForm
     success_redirect = 'website:dashboard'
 
-    def get_form(self, request):
+    def get_form(self,form_class=None):
+        return self.form_class(self.request.POST)
+
+
+
+    def post(self, request, *args, **kwargs):
         """
-        loads the django form
+        overrides the login capabilities so that I could handle
+        the messages displayed in the site
         :param request: http request
-        :return: form object
-        """
-        return self.form_class(request.POST)
-
-    def get(self, request):
-        """
-        loads the template and the form for the user
-        when requested with the http GET method
-        :param request:  HTTP request object
-        :return: HTTP response.
-        """
-        if request.user.is_authenticated:
-            return redirect(self.success_redirect)
-
-        self.form = self.get_form(request)
-        context = {
-            'form': self.form
-        }
-        return render(request, self.template_name, context)
-
-    def post(self, request):
-        """
-        validates if whether the user is worth it to pass to the site or not.
-        :param request: HTTP request object
-        :return: redirect
+        :param args:
+        :param kwargs:
+        :return:
         """
         return self.validate_form(request)
-
 
     def validate_form(self, request):
         """
@@ -83,7 +67,7 @@ class LoginUser(View):
         :return:response if any
         """
         error = ""
-        form = self.get_form(request)
+        form = self.get_form()
         if form.is_valid():
             data = form.cleaned_data
             user = User.objects.get(email=data['email'])
@@ -107,7 +91,6 @@ class LoginUser(View):
         messages.success(self.request, 'Ha sido logueado exitosamente!')
         return self.redirect_success()
 
-
     def form_invalid(self, form, error=None):
         """
         handles the error if the form is not valid
@@ -118,7 +101,7 @@ class LoginUser(View):
         messages.error(self.request,f'Hubo un error con su solicitud: '
                                     f' {[form.errors[error] for error in form.errors] if not error else error}.'
                                     f' Por favor trate de nuevo.')
-        return render(self.request,self.template_name, self.extra_context)
+        return super().form_invalid(form)
 
 
     def redirect_success(self):
@@ -153,23 +136,10 @@ class Dashboard(TemplateView, LoginRequiredMixin):
     extra_context = {}
 
 
+
     def get_context_data(self, **kwargs:dict)->object:
         self.extra_context['objective_form'] = ObjectiveForm(self.request.POST)
-        self.extra_context['objective_list'] =  [
-                                                {'objective':obj,
-                                                 'goals':[
-                                                     {'goal':g.goal,
-                                                      'description':g.description,
-                                                      'consecution_percentage':g.consecution_percentage
-                                                      }
-                                                 for g in obj.objectivegoal_set.all()],
-                                                    'interpolation':
-                                                     {'consecution_percentage':
-                                                        obj.interpolationresult.consecution_percentage,
-                                                      'x_new':obj.interpolationresult.interpolation}
-                                                 } for obj in Objective.objects.all()
-                                                ]
-        print(self.extra_context['objective_list'])
+        self.extra_context['objective_list'] = ObjectiveSerializer(instance=Objective.objects.all(),many=True).data
         return super().get_context_data()
 
 
@@ -201,210 +171,33 @@ class Dashboard(TemplateView, LoginRequiredMixin):
         return response
 
 
-@api_view(http_method_names=['GET'])
-def restful_render_objectives(request):
-    """
-    sends the existing objectives in the DB
+class ObjectiveDetailView(LoginRequiredMixin, DetailView):
+    template_name = 'website/objective_details.html'
+    model = Objective
+    pk_url_kwarg = 'id'
+    extra_context = {}
+    login_url = 'website:login'
+    permission_denied_message = "Para acceder debes de estar logueado. Por favor trate de loguearse para proseguir."
+    redirect_field_name = 'next'
 
-    :param request: http request
-    :return: JSON response
-    """
-    result = {}
-    final_status = status.HTTP_400_BAD_REQUEST
+
+class RegisterConsecutionTableViewSet(ModelViewSet):
+    serializer_class = ObjectiveSerializer
+    lookup_field = 'id'
+    permission_classes = [IsAuthenticated]
+    queryset = Objective.objects.all()
     objective_list_template = 'includes/responsive_table.html'
-    try:
-        authenticated = validate_token(request.headers['X-AuthToken'])
-        if authenticated:
-            result['objective_list'] = render_to_string(objective_list_template,
-                                                        context={'objective_list': [
-                                                            {'objective':obj,
-                                                             'goals':[
-                                                                 {'goal':g.goal,
-                                                                  'description':g.description,
-                                                                  'consecution_percentage':g.consecution_percentage
-                                                                  }
-                                                             for g in obj.objectivegoal_set.all()
-                                                                 ],
-                                                                'interpolation':
-                                                                 {'consecution_percentage':
-                                                  obj.interpolationresult.consecution_percentage,
-                                                                  'x_new':obj.interpolationresult.interpolation}
-                                                             } for obj in Objective.objects.all()]})
-            final_status = status.HTTP_200_OK
-        else:
-            final_status = status.HTTP_401_UNAUTHORIZED
-            raise Exception("Para poder acceder a esta informacion, debe estar authenticado.")
 
-    except Exception as X:
-        result['error'] =  f"Hubo un problema con su solicitud: {X}"
-
-    return Response(content_type='application/json', data=result, status=final_status)
+    def list(self, request, *args, **kwargs):
+        payload = {'objective_list': render_to_string(self.objective_list_template,context={
+            'objective_list':self.serializer_class(instance=Objective.objects.all(),many=True).data}),
+                   }
+        return Response(data=payload, status=status.HTTP_200_OK, content_type='application/json')
 
 
-@api_view(http_method_names=['POST'])
-def restful_render_objective(request, objective_id):
-    """
-    sends the existing objectives in the DB
-
-    :param request: http request
-    :return: JSON response
-    """
-    data = request.data
-    result = {}
-    final_status = status.HTTP_400_BAD_REQUEST
-    try:
-        authenticated = validate_token(data['authtoken'])
-        if authenticated:
-            obj = Objective.objects.get(pk=objective_id)
-            result['objective'] = json.dumps({'id':objective_id,
-                                   'description':obj.description,
-                                   'metric':obj.metric,
-                                     'goals':[
-                                         {'goal':g.goal,
-                                          'description':g.description,
-                                          'consecution_percentage':g.consecution_percentage
-                                          }
-                                     for g in obj.objectivegoal_set.all()
-                                         ],
-                                        'interpolation':
-                                         {'consecution_percentage':
-                          obj.interpolationresult.consecution_percentage,
-                                          'x_new':obj.interpolationresult.interpolation}
-                                                             })
-            final_status = status.HTTP_200_OK
-        else:
-            final_status = status.HTTP_401_UNAUTHORIZED
-            raise Exception("Para poder acceder a esta informacion, debe estar authenticado.")
-
-    except Exception as X:
-        result['error'] =  f"Hubo un problema con su solicitud: {X}"
-
-    return Response(content_type='application/json', data=result, status=final_status)
-
-
-@api_view(http_method_names=['POST'])
-def handler_objective(request:object) -> Response:
-    """
-    creates or updates an objective based on the given params
-    it must contain the following rules:
-    - at least two goals
-    - fields for goals and concecutions must be numbers
-    - it must have the auth token for the user
-    - it must have the goals setup based on the order if asc items must be asc else it will return an error
-    :param request: http request
-    :return: JSONResponse object
-    """
-    final_status = status.HTTP_400_BAD_REQUEST
-    response_data = {}
-    required_params = ['goals','consecution_percentages','goals_descriptions','authtoken','metric','description',
-                       'new_x']
-    try:
-        request_data = request.data
-        authenticated = validate_token(request_data['authtoken'])
-        if authenticated:
-            print(request_data['goals'])
-            goals =[float(x) for x in request_data['goals']]
-            # pdb.set_trace()
-            consecution_percentages = [float(x) for x in request_data['consecution_percentages']]
-            goals_descriptions =request_data['goals_descriptions']
-
-            if len(goals) == len(consecution_percentages)== len(goals_descriptions):
-                if len(goals) < 2:
-                    raise Exception("Al menos debe de tener 2 metas para poder procesar el calculo.")
-
-                values_validation = validate_goal_order(goals=goals,
-                                                        consecution=consecution_percentages)
-                if not values_validation['status']:
-                    raise Exception(f"{values_validation['error']}")
-                lineal_interpolation_result = calculate_lineal_interpolation(
-                                                                    x_new=float(request_data['new_x']),
-                                                                      y_values=consecution_percentages,
-                                                                      order=values_validation['order'],
-                                                                      x_values=goals)
-                if 'error' not in lineal_interpolation_result.keys():
-                    lineal_interpolation = lineal_interpolation_result['interpolation']
-                    objective = Objective.objects.update_or_create(
-                        id=int(request_data['objective_id']) if 'objective_id' in request_data.keys()\
-                            else Objective.objects.last().id + 1 if Objective.objects.last() else 1,
-                        description=request_data['description'],
-                        metric=request_data['metric']
-                    )[0]
-
-                    for i in range(len(goals)):
-                        ObjectiveGoal.objects.update_or_create(objective=objective,
-                            goal=goals[i],
-                            description=goals_descriptions[i],
-                            consecution_percentage=consecution_percentages[i]
-                        )
-
-                    InterpolationResult.objects.update_or_create(
-                        objective=objective,
-                        interpolation=float(request_data['new_x']),
-                        consecution_percentage=lineal_interpolation
-                    )
-                    final_status = status.HTTP_200_OK
-                    response_data['result'] = \
-                        f'El objetivo ha sido calculado y ' \
-                        f'{ "actualizado" if "objective_id" in request_data.keys() else "guardado"} exitosamente!!'
-                else:
-                    raise Exception(f"Error-Interno: Para poder guardar los "
-                                    f"registros debe haber un"
-                                    f" calculo adecuado de las metricas: {lineal_interpolation_result['error']}!")
-            else:
-                raise Exception("Para poder procesar su informacion, "
-                                "toda la informacion debe estar completa. Trate de nuevo")
-        else:
-            final_status = status.HTTP_401_UNAUTHORIZED
-            raise Exception("Para poder acceder a esta informacion, debe estar authenticado.")
-
-    # except KeyError:
-    #     response_data['error'] = f"Hubo un error con su solicitud, debe proveer los parametros: descripcion," \
-    #                              f"metrica, metas, meta, descripcion de la meta y el porcentaje de consecucion," \
-    #                              f" trate de nuevo"
-
-    except Exception as X:
-        response_data['error'] = f"Hubo un error con su solicitud:{X}, trate de nuevo."
-
-    finally:
-        return Response(content_type='application/json', data=response_data, status=final_status)
-
-@api_view(http_method_names=['POST'])
-def remove_objective(request, objective_id):
-    """
-    sends the existing objectives in the DB
-    this will take the pagination object and paginate
-    the results.
-    by default paginates the first page.
-
-    :param request: http request
-    :return: JSON response
-    """
-    result ={}
-    final_status = status.HTTP_400_BAD_REQUEST
-    request_data = request.data
-    objective_list_template = 'includes/responsive_table.html'
-    try:
-        authenticated = validate_token(request_data['authtoken'])
-        if authenticated:
-            record = Objective.objects.get(id=objective_id)
-            record.delete()
-            result['message'] = 'El objetivo fue removido exitosamente!!'
-            result['objective_list'] = render_to_string(objective_list_template,
-                                                        context={'objective_list':Objective.objects.all()})
-            final_status = status.HTTP_200_OK
-        else:
-            final_status = status.HTTP_401_UNAUTHORIZED
-            raise Exception("Para poder acceder a esta informacion, debe estar authenticado.")
-
-    except ObjectDoesNotExist:
-        result['error'] = 'Hubo un error con el objetivo que trato de borrar, trate de nuevo.'
-
-    except KeyError:
-        result['error'] = 'Hubo un error con el objetivo que trato de borrar, trate de nuevo.'
-
-    except Exception as E:
-        result['error'] = f'Hubo un error con la solicitud {E}, trate de nuevo.'
-
-    finally:
-        return Response(content_type='application/json',data=result, status=final_status)
+class InterpolationOperationViewSet(ModelViewSet):
+    lookup_field = 'id'
+    serializer_class = InterpolationResultSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = InterpolationResult.objects.all()
 

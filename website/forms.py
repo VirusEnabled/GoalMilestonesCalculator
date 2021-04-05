@@ -32,10 +32,10 @@ class LoginForm(Form):
 class ObjectiveForm(Form):
     metrica = CharField(max_length=30)
     descripcion = CharField(max_length=150, widget=Textarea())
-    valor_de_acceptacion = CharField(max_length=100)
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.keys():
             self.fields[field].widget.attrs = {'class' : "form-control"}
+
+

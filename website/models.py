@@ -19,6 +19,43 @@ class Objective(BaseModel):
     def __str__(self):
         return f"Objetivo <{self.id}>"
 
+
+    @property
+    def has_consecution_calculated(self):
+        """
+        verifies if the objective itself has been
+        calculated already.
+        :return:
+        """
+        result = False
+        try:
+            x = self.interpolationresult.interpolation
+            result = True
+        except Exception:
+            pass
+        return result
+
+    @property
+    def max_consecution(self):
+        """
+        gets the maximum consecution percentage
+        :return:float if exists else none
+        """
+        cons = self.objectivegoal_set.all()
+        return max(obj.consecution_percentage
+                   for obj in cons) if cons else None
+
+    @property
+    def min_consecution(self):
+        """
+        gets the minimun consecution
+        value
+        :return:float if exists else none
+        """
+        cons = self.objectivegoal_set.all()
+        return min(obj.consecution_percentage
+                   for obj in cons) if cons else None
+
 class ObjectiveGoal(BaseModel):
     objective = models.ForeignKey(Objective,models.CASCADE)
     goal = models.FloatField(default=0.00)

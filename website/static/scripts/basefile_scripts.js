@@ -6,9 +6,9 @@ toastr.options = {
   "positionClass": "toast-top-right",
   "preventDuplicates": false,
   "onclick": null,
-  "showDuration": "9000",
+  "showDuration": "2000",
   "hideDuration": "1000",
-  "timeOut": "500000",
+  "timeOut": "5000",
   "extendedTimeOut": "1000",
   "showEasing": "swing",
   "hideEasing": "linear",
@@ -76,7 +76,8 @@ function AddMetricDiv(num=1){
     the same properties
     returns: Null
     */
-    for (i=0;i<num;i++){
+    if (num >= 1 ){
+        for (i=0; i<num; i++){
             var container_holder = document.getElementById('metrics_holder');
             var metrics = document.getElementsByClassName('metric_container');
             var last_metric = metrics[metrics.length-1];
@@ -123,6 +124,8 @@ function AddMetricDiv(num=1){
 
     }
 
+    }
+
 }
 
 function parse_values(array, dtype){
@@ -135,7 +138,7 @@ function parse_values(array, dtype){
     for(var i=0;i<array.length;i++){
             var value = (dtype=='str')?array[i].value: (parseFloat(array[i].value).toString()=='NaN')? null: parseFloat(array[i].value);
 
-            if(value == '' || value== null)
+            if(value == '' || value == null)
             {
                 return "No se puede procesar un valor vacio, por favor de llenar los campos."
             }
@@ -172,7 +175,7 @@ function cleanForm(){
 
     document.getElementById('id_metrica').value="";
     document.getElementById('id_descripcion').value="";
-    document.getElementById('id_valor_de_acceptacion').value="";
+//    document.getElementById('id_valor_de_acceptacion').value="";
 }
 
 function collectFormData(update=false){
@@ -186,33 +189,27 @@ function collectFormData(update=false){
     var error = ``;
     var passed = true;
     var descriptions = document.getElementsByClassName(`meta_description`);
-    var goals  = document.getElementsByClassName(`meta_value`);
+    var goalx  = document.getElementsByClassName(`meta_value`);
     var percentage_concecution = document.getElementsByClassName(`meta_consecution`);
-    goals_values = [descriptions, goals, percentage_concecution]
-    for(i=0;i<goals_values.length;i++)
+    goals_values = [parse_values(descriptions, 'str'), parse_values(goalx, 'str'),
+                    parse_values(percentage_concecution, 'str')]
+    form_data.objectivegoal_set = []
+    d = parse_values(descriptions, 'str')
+    g = parse_values(goalx, 'str')
+    pc = parse_values(percentage_concecution, 'str')
+    for(i=0;i<goalx.length;i++)
     {
-        gathered_data = parse_values(goals_values[i], 'str')
-        if (typeof(gathered_data)==typeof(''))
+         if (typeof(d)==typeof('')||typeof(g)==typeof('')||typeof(pc)==typeof(''))
         {
-            toastr.error(gathered_data,'Error');
+            toastr.error(`${(typeof(d)==typeof(''))?d:(typeof(g)==typeof(''))?g:(typeof(pc)==typeof(''))?pc:"Hbo un error con su procesamiento, debe pasar valores en cada campo"}`,'Error');
             passed=false;
-            break
+            break;
         }
+
         else{
-            if(i==0)
-            {
-            form_data.goals_descriptions=gathered_data
-            }
-            else if (i==1)
-            {
-                form_data.goals=gathered_data
-            }
-            else
-            {
-
-                form_data.consecution_percentages=gathered_data
-
-            }
+            form_data.objectivegoal_set.push({description:d[i],
+                                              goal: g[i],
+                                              consecution_percentage:pc[i]})
 
         }
 
@@ -221,16 +218,14 @@ function collectFormData(update=false){
     {
         form_data.metric=document.getElementById('id_metrica').value
         form_data.description=document.getElementById('id_descripcion').value
-        form_data.new_x=document.getElementById('id_valor_de_acceptacion').value
+//        form_data.new_x=document.getElementById('id_valor_de_acceptacion').value
 
-        if(form_data.metric!=''&&form_data.description!=''&&form_data.new_x!='')
+        if(form_data.metric!=''&&form_data.description!='')
         {
-
-//            console.log(form_data);
             return form_data;
         }
         else{
-        toastr.error("No se puede procesar un valor vacio, por favor de llenar los campos.")
+            toastr.error("No se puede procesar un valor vacio, por favor de llenar los campos.")
         }
     }
 
@@ -245,11 +240,11 @@ function loadObjectiveList(){
     this is performed via ajax
   */
    var sender = new XMLHttpRequest();
+    sender.open('GET','/api/handle_objectives/');
     var token = getCookie('authtoken');
-    sender.open('GET','/list_objectives/')
     var csrf = getCookie('csrftoken');
-//    sender.setRequestHeader('X-CSRFToken', csrf);
-    sender.setRequestHeader('X-AuthToken', token);
+    sender.setRequestHeader('X-CSRFToken', csrf);
+    sender.setRequestHeader("Authorization",`Token ${token}`);
     sender.setRequestHeader("Content-Type", "application/JSON");
     sender.onload = function(){
         if(this.readyState == 4)
@@ -263,7 +258,7 @@ function loadObjectiveList(){
 
                 else
                 {
-                   toastr.error(response.error,'Error');
+                   toastr.error(response.error, 'Error');
 
                 }
 
@@ -273,10 +268,10 @@ function loadObjectiveList(){
 
 }
 
+
 function close_my_modal(modal_id){
     if(modal_id=='action_form'){cleanForm();}
-    $(`#${modal_id}`).modal('hide');
-
+    $(`#${modal_id}`).modal('dismiss');
 }
 
 
@@ -285,26 +280,26 @@ function handleObjective()
  var sender = new XMLHttpRequest();
     var token = getCookie('authtoken');
     var objective_data = collectFormData();
-//    console.log(token);
-    objective_data.authtoken=token;
-//    alert(holder);
     if (holder.objective != null){
         objective_data.objective_id=holder.objective.id;
     }
+    console.log(objective_data)
     var payload = JSON.stringify(objective_data)
-
-    sender.open('POST','/handle_objective/')
+    method = (holder.objective==null)?'POST':'PUT';
+    destination = (holder.objective!=null)?`/api/handle_objectives/${holder.objective.id}/`:`/api/handle_objectives/`
+    sender.open(method, destination)
     var csrf = getCookie('csrftoken');
     sender.setRequestHeader('X-CSRFToken', csrf);
     sender.setRequestHeader("Content-Type", "application/JSON");
+    sender.setRequestHeader('Authorization', `Token ${token}`)
     sender.onload = function(){
         if(this.readyState == 4)
             {
 
                 var response = JSON.parse(this.responseText);
-                if(this.status == 200)
+                if(this.status >=200 && this.status < 300)
                 {
-                    toastr.success("El record ha sido Agregado exitosamente!!",'Success')
+                    toastr.success(`El record ha sido ${(holder.objective==null)?'Agregado':'Actualizado'} exitosamente!!`,'Success')
                     loadObjectiveList();
                     cleanForm();
                     holder.objective = null;
@@ -323,31 +318,90 @@ function handleObjective()
     sender.send(payload);
 }
 
-function modify_objective(objective){
 
+function handleConsecution(objective_id)
+{
  var sender = new XMLHttpRequest();
     var token = getCookie('authtoken');
-    var objective_id = objective.objective_id
-//    console.log(token);
-    var payload = JSON.stringify({
-    "authtoken":token
-    })
-
-    sender.open('POST','/get_objective/'+objective_id)
-    var csrf = getCookie('csrftoken');
-    sender.setRequestHeader('X-CSRFToken', csrf);
-    sender.setRequestHeader("Content-Type", "application/JSON");
-    sender.onload = function(){
+    var consecution_create = (document.getElementById('interpolation_op_status').value=='create')?true:false;
+    var new_x = document.getElementById('new_x').value;
+    if( parseFloat(new_x).toString() == 'NaN')
+    {
+        toastr.error('Para poder actualizar el valor, debe de tener un valor numerico aceptable.')
+    }
+    else
+    {
+        method = (consecution_create == true)?'POST':'PUT';
+        payload = JSON.stringify({'interpolation':new_x, 'objective': objective_id})
+        inter_id = document.getElementById('obj_id').value;
+        console.log(payload, consecution_create)
+        destination = (consecution_create == true)?`/api/interpolation_operation/`:`/api/interpolation_operation/${inter_id}/`
+        sender.open(method, destination)
+        var csrf = getCookie('csrftoken');
+        sender.setRequestHeader('X-CSRFToken', csrf);
+        sender.setRequestHeader("Content-Type", "application/JSON");
+        sender.setRequestHeader('Authorization', `Token ${token}`)
+        sender.onload = function(){
         if(this.readyState == 4)
             {
 
                 var response = JSON.parse(this.responseText);
+                if(this.status >=200 && this.status < 300)
+                {
+                    toastr.success(`El record ha sido ${(holder.objective==null)?'Agregado':'Actualizado'} exitosamente!!`,'Success')
+                    console.log(response);
+                    document.getElementById('new_x').value='';
+                    document.getElementById('new_x_value').text=`${response.interpolation}`
+                    document.getElementById('consecution_value').text=`${response.consecution_percentage} %`;
+                    close_my_modal('calculate_objective');
+                }
+
+                else
+                {
+                   console.log(response);
+                   toastr.error(response.error,'Error');
+
+                }
+
+             }
+        }
+        sender.send(payload);
+
+    }
+
+}
+
+
+function modify_consecution(interpolation_value){
+    var new_x = document.getElementById('new_x');
+    if( parseFloat(interpolation_value).toString() == 'NaN')
+    {
+        toastr.error('Para poder actualizar el valor, debe de tener un valor numerico aceptable.')
+    }
+    else
+    {
+        new_x.value=interpolation_value;
+        $('#calculate_objective').modal('show');
+
+    }
+}
+function modify_objective(objective_id){
+
+ var sender = new XMLHttpRequest();
+    var token = getCookie('authtoken');
+    sender.open('GET',`/api/handle_objectives/${objective_id}/`)
+    var csrf = getCookie('csrftoken');
+    sender.setRequestHeader('X-CSRFToken', csrf);
+    sender.setRequestHeader("Authorization",`Token ${token}`);
+    sender.setRequestHeader("Content-Type", "application/JSON");
+    sender.onload = function(){
+        if(this.readyState == 4)
+            {
+                var response = JSON.parse(this.responseText);
                 if(this.status == 200)
                 {
-//                    toastr.success("El record ha sido borrado existosamente!!",'Success')
-////                      console.log(response)
-                      holder.objective=JSON.parse(response.objective);
-                      holder.objective_id=objective.objective_id;
+                      console.log(response);
+                      holder.objective=response;
                       load_form(holder.objective);
 
                 }
@@ -361,34 +415,34 @@ function modify_objective(objective){
 
              }
     }
-    sender.send(payload);
+    sender.send();
 
 }
 
 function load_form(objective)
 {
     holder.objective_id = objective.objective_id;
-    console.log(objective.goals.length,"OBJECTIVE");
-    AddMetricDiv(num=(objective.goals.length > 2) ? objective.goals.length-2 : 1);
+    console.log(objective.objectivegoal_set.length,"OBJECTIVE");
+    AddMetricDiv(num=(objective.objectivegoal_set.length >= 2) ? objective.objectivegoal_set.length-2 : (objective.objectivegoal_set.length-2 ==1 )?1:0);
     var containers = document.getElementsByClassName('metric_container');
     var descriptions = document.getElementsByClassName(`meta_description`);
     var goals  = document.getElementsByClassName(`meta_value`);
     var percentage_concecution = document.getElementsByClassName(`meta_consecution`);
     goals_values = [descriptions, goals, percentage_concecution]
-//    console.log(goals_values, objective.goals.length)
+    console.log(goals_values, objective.objectivegoal_set.length)
 
-    for(i=0;i<containers.length;i++)
-    {
+    for(i=0; i<containers.length; i++)
+    {   console.log(i,objective.objectivegoal_set.length)
         cov = containers[i].getElementsByTagName('input')
-        cov[0].value=objective.goals[i].description;
-        cov[1].value=objective.goals[i].goal;
-        cov[2].value=objective.goals[i].consecution_percentage;
+        cov[0].value=objective.objectivegoal_set[i].description;
+        cov[1].value=objective.objectivegoal_set[i].goal;
+        cov[2].value=objective.objectivegoal_set[i].consecution_percentage;
 
     }
 
     document.getElementById('id_metrica').value=objective.metric;
     document.getElementById('id_descripcion').value=objective.description;
-    document.getElementById('id_valor_de_acceptacion').value=objective.interpolation.x_new;
+//    document.getElementById('id_valor_de_acceptacion').value=objective.interpolation.x_new;
 
     $('#action_form').modal('show');
 
@@ -401,17 +455,16 @@ function delete_record(unique_id){
     var payload = JSON.stringify({
     "authtoken":token
     })
-
-    sender.open('POST','/delete_objective/'+unique_id)
+    sender.open('DELETE',`/api/handle_objectives/${unique_id}/`)
     var csrf = getCookie('csrftoken');
     sender.setRequestHeader('X-CSRFToken', csrf);
     sender.setRequestHeader("Content-Type", "application/JSON");
+    sender.setRequestHeader('Authorization', `Token ${token}`)
     sender.onload = function(){
         if(this.readyState == 4)
             {
 
-                var response = JSON.parse(this.responseText);
-                if(this.status == 200)
+                if(this.status == 204)
                 {
                     toastr.success("El record ha sido borrado existosamente!!",'Success')
                     loadObjectiveList();
