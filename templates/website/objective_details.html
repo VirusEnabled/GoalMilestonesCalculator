@@ -1,0 +1,146 @@
+{% extends 'website/basefile.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Objetivo #{{objective.id}}: {{objetive}} {% endblock %}</title>
+</head>
+<body>
+    {% block body %}
+    <div class="card objective-container">
+        <div class="objective-title">
+            <h3>
+                {{objective.metric|title}}
+            </h3>
+
+        </div>
+        <hr>
+        <div class="objective-details">
+            <h4>
+                Descripcion
+            </h4>
+            <p>
+               {{objective.description}}
+            </p>
+            <hr>
+
+
+            <div class="objective-interpolation-container">
+                 <h4>
+                    Resultado Alcanzado
+                </h4>
+                    <input id="interpolation_op_status" type="hidden"
+                           value="{% if not objective.has_consecution_calculated %}create{% else %}update{% endif %}">
+                {% if objective.has_consecution_calculated %}
+                 <input id="obj_id" type="hidden"
+                           value="{{objective.interpolationresult.id}}">
+                <a class="btn btn-success calculate_objective_btn" onclick="modify_consecution('{{objective.interpolationresult.interpolation}}');"><i class="ion-calculator"></i>
+                    Actualizar calculo de Objectivo
+                </a>
+                {% else %}
+                <a class="btn btn-success calculate_objective_btn" data-toggle="modal" data-target="#calculate_objective"><i class="ion-calculator">
+                    </i> Calcular Objectivo
+                </a>
+                {% endif %}
+                <div>
+
+                <h5>
+                    Valor alcanzado
+                </h5>
+                    <h6 id="new_x_value">
+                       {% if objective.has_consecution_calculated %}
+                            {{objective.interpolationresult.interpolation}}
+                        {% else %}
+                            No hay un valor asignado todavia
+                        {% endif %}
+                    </h6>
+
+
+                <h5>
+                    Valores de Consecucion
+                </h5>
+                    <h6 id="consecution_value">
+                        {% if objective.has_consecution_calculated %}
+                            {{objective.interpolationresult.consecution_percentage}}
+                        {% else %}
+                            No hay un valor asignado todavia
+                        {% endif %}
+                    </h6>
+                </div>
+
+            </div>
+            <hr>
+            <h4>
+                Metas
+            </h4>
+
+            <table class="table" id="goal_table">
+                <thead>
+                    <tr>
+                        <th>
+                            Descripcion
+                        </th>
+
+                        <th>
+                            Valor de Meta
+                        </th>
+
+                        <th>
+                            % de Consecucion
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for goal in objective.objectivegoal_set.all %}
+                <tr>
+                   <td>
+                       {{goal.description }}
+                   </td>
+                    <td>
+                        {{goal.goal }}
+                    </td>
+                    <td>
+                        {{goal.consecution_percentage }}
+                    </td>
+                </tr>
+
+                {% empty %}
+                    <tr>
+                        No hay metas asignadas en este objetivo.
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+<!-- Modal normal sign in start -->
+<div id="calculate_objective" class="modal fade create-form" role="dialog">
+    <div class="modal-dialog modal-md card">
+        <i class="ion-close modal-close" data-dismiss="modal" id="closer" onclick="close_my_modal('action_form');"></i>
+        <hr>
+        <div class="modal-header">
+            <h3 style="text-align:center; margin-left: 21px;">
+                Calular Valor de Consecucion
+            </h3>
+        </div>
+        <div class="card-block">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <label for="new_x">Valor de Meta Alcanzado</label>
+                    <input type="text" id="new_x" placeholder="Valor Alcanzado" class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button id="close_my_modal" type="button" class="btn btn-secondary" data-dismiss="modal" onclick="close_my_modal('calculate_objective');">Cancelar</button>
+                    <button class="btn btn-success" onclick="handleConsecution('{{objective.id}}');">Calcular Consecucion </button>
+                </div>
+        </div>
+
+    </div>
+</div>
+ <!--Modal normal sign in end-->
+
+    {% endblock %}
+</body>
+</html>

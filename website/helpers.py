@@ -3,27 +3,6 @@ import pdb
 import json
 import numpy as np
 
-def linear_interpolation_asc(x_new, data):
-    """
-    calculates the lineal interpolation in an asc order
-    :param x_new: new x to be using
-    :param data: consecution percentages
-    :return: float
-    """
-    j = 0
-    while (data[j][0] < x_new and data[j+1][0] < x_new):
-        j = j + 1
-    x_left = data[j][0]
-    x_right = data[j+1][0]
-    y_left = data[j][1]
-    y_right = data[j+1][1]
-
-    slope = (y_right-y_left)/(x_right-x_left)
-    intercept = y_left-slope*x_left
-    y_new = slope*x_new+intercept
-
-    return y_new
-
 
 def calculate_lineal_interpolation(x_values:list,
                                    x_new: float,
@@ -39,26 +18,23 @@ def calculate_lineal_interpolation(x_values:list,
     :return: float: interpolation value
     """
     result = {}
+    x_new = float(x_new)
     try:
-        if x_new < min(x_values) or x_new > max(x_values):
-            result['error'] = f"El valor proveido {x_new} es invalido para poder calcular la interpolacion. porfavor provea " \
-                              f"valores dentro del rango:{min(x_values)} -{max(x_values)}"
-        else:
-            # percentage_of_consecution = np.interp(xp=x_new,x=x_values,fp=y_values)
-            percentage_of_consecution = linear_interpolation_asc(x_new=x_new,data=[x_values,y_values])
+        percentage_of_consecution = np.interp(x=x_new,fp=y_values,xp=x_values)
+        print(x_new, min(x_values), x_values, percentage_of_consecution)
+        if order == 'asc' and x_new < min(x_values):
+            percentage_of_consecution = 0.00
 
-            if order=='asc' and percentage_of_consecution < min(x_values):
-                percentage_of_consecution = 0.00
+        elif order=='asc' and x_new > max(x_values):
+            percentage_of_consecution = 100.00
 
-            elif order=='asc' and percentage_of_consecution < max(x_values):
-                percentage_of_consecution = 100.00
+        elif order=='desc' and x_new > max(x_values):
+            percentage_of_consecution = 0.00
 
-            elif order=='desc' and percentage_of_consecution > max(x_values):
-                percentage_of_consecution = 0.00
+        elif order=='desc' and x_new < min(x_values):
+            percentage_of_consecution = 100.00
+        result['interpolation'] = percentage_of_consecution
 
-            elif order=='desc' and percentage_of_consecution < min(x_values):
-                percentage_of_consecution = 100.00
-            result['interpolation'] = percentage_of_consecution
     except Exception as X:
         result['error'] = f"Hubo un error: {X}"
 
