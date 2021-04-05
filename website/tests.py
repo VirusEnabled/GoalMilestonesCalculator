@@ -71,12 +71,12 @@ class MainSiteTestCase(TestCase):
         tests the response of the listing items
         :return: error if any
         """
-        endpoint = reverse('website:list_objectives')
+        endpoint = 'http://127.0.0.1:8000/api/handle_objectives/'
         token = Token.objects.get_or_create(user=self.user)[0]
         data = {
             'authtoken': token.key
         }
-        response = self.client.get(path=endpoint,data=data, headers={'x-authtoken': token.key})
+        response = self.client.get(path=endpoint,data=data, headers={'Autorization': f"Token {token.key}"})
         self.assertEqual(response.status_code,200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
         self.assertIn('objective_list' , response.json().keys(),"The request was a success but it didn't render the list")
@@ -88,7 +88,7 @@ class MainSiteTestCase(TestCase):
         tests how the objects are created
         :return: error if any
         """
-        endpoint = reverse('website:handle_objective')
+        endpoint = 'http://127.0.0.1:8000/api/handle_objectives/'
         token = Token.objects.get_or_create(user=self.user)[0]
         data = {
             'authtoken': token.key,
@@ -99,7 +99,7 @@ class MainSiteTestCase(TestCase):
             'metric': 'new increases for clients',
             'new_x': 2.0,
         }
-        response = self.client.post(path=endpoint, data=data)
+        response = self.client.post(path=endpoint, data=data,headers={'Autorization': f"Token {token.key}"})
         self.assertEqual(response.status_code, 200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
 
@@ -110,7 +110,7 @@ class MainSiteTestCase(TestCase):
         tests how the objects are created
         :return: error if any
         """
-        endpoint = reverse('website:handle_objective')
+        endpoint = 'http://127.0.0.1:8000/api/handle_objectives/'
         token = Token.objects.get_or_create(user=self.user)[0]
         data = {
             'authtoken': token.key,
@@ -122,7 +122,7 @@ class MainSiteTestCase(TestCase):
             'new_x': 10.0,
 
         }
-        response = self.client.post(path=endpoint, data=data)
+        response = self.client.post(path=endpoint, data=data,headers={'Autorization': f"Token {token.key}"})
         self.assertEqual(response.status_code, 200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
 
@@ -132,7 +132,7 @@ class MainSiteTestCase(TestCase):
         tests how the objects are created
         :return: error if any
         """
-        endpoint = reverse('website:handle_objective')
+        endpoint = 'http://127.0.0.1:8000/api/handle_objectives/'
         token = Token.objects.get_or_create(user=self.user)[0]
         data = {
             'authtoken': token.key,
@@ -143,7 +143,7 @@ class MainSiteTestCase(TestCase):
             'metric': 'new increases for clients',
             'new_x': 10.0,
         }
-        response = self.client.get(path=endpoint, data=data)
+        response = self.client.get(path=endpoint, data=data,headers={'Autorization': f"Token {token.key}"})
         self.assertEqual(response.status_code, 200,
                         f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
 
@@ -152,10 +152,11 @@ class MainSiteTestCase(TestCase):
         tests how the objects are created
         :return: error if any
         """
-        endpoint = reverse('website:handle_objective')
         token = Token.objects.get_or_create(user=self.user)[0]
         objective = Objective.objects.create(metric='new increases for clients',
                                              description='adding new values for our clients')
+        endpoint = f'http://127.0.0.1:8000/api/handle_objectives/{objective.id}/'
+
         goals = [
             {'goal':90.99,
              'consecution_percentage':20.00,
@@ -182,7 +183,7 @@ class MainSiteTestCase(TestCase):
             'new_x': 91.0,
             'metric': objective.metric,
         }
-        response = self.client.post(path=endpoint, data=data)
+        response = self.client.put(path=endpoint, data=data,headers={'Autorization': f"Token {token.key}"})
         self.assertEqual(response.status_code, 200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
 
@@ -197,6 +198,8 @@ class MainSiteTestCase(TestCase):
         token = Token.objects.get_or_create(user=self.user)[0]
         objective = Objective.objects.create(metric='new increases for clients',
                                              description='adding new values for our clients')
+        endpoint = f'http://127.0.0.1:8000/api/handle_objectives/{objective.id}/'
+
         goals = [
             {'goal': 90.99,
              'consecution_percentage': 20.00,
@@ -222,7 +225,7 @@ class MainSiteTestCase(TestCase):
             'new_x':10.0,
             'metric': objective.metric,
         }
-        response = self.client.post(path=endpoint, data=data)
+        response = self.client.post(path=endpoint, data=data,headers={'Autorization': f"Token {token.key}"})
         self.assertEqual(response.status_code, 200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
 
@@ -234,11 +237,11 @@ class MainSiteTestCase(TestCase):
         token = Token.objects.get_or_create(user=self.user)[0]
         objective = Objective.objects.create(metric='new increases for clients',
                                              description='adding new values for our clients')
-        endpoint = reverse('website:delete_objective',kwargs={'objective_id':objective.id})
+        endpoint = f'http://127.0.0.1:8000/api/handle_objectives/{objective.id}/'
         data = {
             'authtoken': token.key,
         }
-        response = self.client.post(endpoint,data=data)
+        response = self.client.delete(endpoint,data=data,headers={'Autorization': f"Token {token.key}"})
         self.assertEqual(response.status_code,200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
 
@@ -252,11 +255,11 @@ class MainSiteTestCase(TestCase):
         token = Token.objects.get_or_create(user=self.user)[0]
         objective = Objective.objects.create(metric='new increases for clients',
                                              description='adding new values for our clients')
-        endpoint = reverse('website:delete_objective', kwargs={'objective_id': random.randrange(249)})
+        endpoint = f'http://127.0.0.1:8000/api/handle_objectives/{objective.id}/'
         data = {
             'authtoken': token.key,
         }
-        response = self.client.post(endpoint, data=data)
+        response = self.client.post(endpoint, data=data,headers={'Autorization': f"Token {token.key}"})
         self.assertEqual(response.status_code, 200,
                          f"Error: {response.json()['error'] if 'error' in response.json().keys() else response.json()}")
 

@@ -195,9 +195,86 @@ class RegisterConsecutionTableViewSet(ModelViewSet):
         return Response(data=payload, status=status.HTTP_200_OK, content_type='application/json')
 
 
+    def create(self, request, *args, **kwargs):
+        """
+        modifies the base class to display the proper messages
+        :param request: http request
+        :param args: list
+        :param kwargs: dict
+        :return: json response
+        """
+        result = {}
+        st=status.HTTP_400_BAD_REQUEST
+        data = request.data
+        try:
+            serialized = self.serializer_class(data=data)
+            if serialized.is_valid():
+                cleaned = serialized.validated_data
+                validation = validate_goal_order(goals=[ob['goal'] for ob in cleaned['objectivegoal_set']],
+                                                 consecution=[ob['consecution_percentage']
+                                                              for ob in cleaned['objectivegoal_set']])
+                if validation['status']:
+                    serialized.save()
+                    st=status.HTTP_201_CREATED
+                else:
+                    raise Exception(validation['error'])
+
+            else:
+                raise Exception(
+                    "Hubo un problema con la informacion enviada, trate de enviarla en el formato adecuado."
+                                )
+        except Exception as X:
+            result['error'] = f"X"
+
+        return Response(data=result,status=st,content_type='application/json')
+
+    def update(self, request, *args, **kwargs):
+        """
+        modifies the base class method to display the proper messages.
+        :param request: http request
+        :param args: list
+        :param kwargs: dict
+        :return: json response
+        """
+        result = {}
+        st = status.HTTP_400_BAD_REQUEST
+        data = request.data
+        try:
+            objective = Objective.objects.get(pk=self.kwargs[self.lookup_field])
+            serialized = self.serializer_class(instance=objective, data=data)
+            if serialized.is_valid():
+                cleaned = serialized.validated_data
+                validation = validate_goal_order(goals=[ob['goal'] for ob in cleaned['objectivegoal_set']],
+                                                 consecution=[ob['consecution_percentage']
+                                                              for ob in cleaned['objectivegoal_set']])
+
+                if validation['status']:
+                    if objective.has_consecution_calculated:
+                        new_interpolation = calculate_lineal_interpolation(
+                            x_new=objective.interpolationresult.interpolation,
+                            x_values=[ob['goal'] for ob in cleaned['objectivegoal_set']],
+                            y_values=[ob['consecution_percentage']
+                                                              for ob in cleaned['objectivegoal_set']],
+                            order=validation['order'])
+                        objective.interpolationresult.consecution_percentage = new_interpolation
+                    serialized.save()
+                    objective.save()
+                    st = status.HTTP_201_CREATED
+                else:
+                    raise Exception(validation['error'])
+
+            else:
+                raise Exception(
+                    "Hubo un problema con la informacion enviada, trate de enviarla en el formato adecuado."
+                )
+        except Exception as X:
+            result['error'] = f"{X}"
+
+        return Response(data=result, status=st, content_type='application/json')
+
 class InterpolationOperationViewSet(ModelViewSet):
     lookup_field = 'id'
     serializer_class = InterpolationResultSerializer
     permission_classes = [IsAuthenticated]
     queryset = InterpolationResult.objects.all()
-
+    # http_method_names = ['POST','PUT']

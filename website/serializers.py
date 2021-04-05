@@ -9,6 +9,7 @@ class ObjectiveGoalSerializer(ModelSerializer):
         model = ObjectiveGoal
         fields = ['objective','description','goal', 'consecution_percentage']
         depth = 1
+        order_by = 'goal'
 
 
 class InterpolationResultSerializer(ModelSerializer):
@@ -84,17 +85,6 @@ class ObjectiveSerializer(ModelSerializer):
                    ]
         depth = 1
 
-
-    def is_valid(self, raise_exception=False):
-        """
-        here we modify the behavior
-        to add better functionality
-        :param raise_exception: Exception to raise if not valid
-        :return: bool
-        """
-        return super().is_valid(raise_exception)
-
-
     def create(self, validated_data):
         """
         modified methods
@@ -114,7 +104,6 @@ class ObjectiveSerializer(ModelSerializer):
         :param validated_data: dict
         :return:django model instance
         """
-        # pdb.set_trace()
         goals = validated_data.pop('objectivegoal_set')
         instance.metric = validated_data['metric']
         instance.description = validated_data['description']
@@ -122,3 +111,6 @@ class ObjectiveSerializer(ModelSerializer):
         for goal in goals:
             ObjectiveGoal.objects.update_or_create(objective=instance, **goal)
         return instance
+
+
+
